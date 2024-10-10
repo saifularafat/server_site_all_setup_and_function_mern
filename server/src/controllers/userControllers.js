@@ -97,9 +97,24 @@ const deleteUserByID = async (req, res, next) => {
 
 const processRegister = async (req, res, next) => {
     try {
+        const { name, email, password, phone, address } = req.body;
+
+        const newUser = {
+            name,
+            email,
+            password,
+            phone,
+            address
+        }
+
+        const userExists = await User.exists({email: email});
+        if (userExists) {
+            throw createError(409, "user email already exists. Please Sign in!")
+        }
         return successResponse(res, {
             statusCode: 200,
-            message: "user was deleted successfully",
+            message: "new user create a successfully",
+            payload: { newUser }
         })
     } catch (error) {
         next(error)

@@ -7,9 +7,9 @@ const {
     processRegister,
 } = require("../controllers/userControllers");
 
-
+// Get all user router
+userRouter.post("/process-register", processRegister);
 userRouter.get("/", getUsers);
-userRouter.get("/process-register", processRegister);
 userRouter.get("/:id", getUserById);
 userRouter.delete("/:id", deleteUserByID);
 
