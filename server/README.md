@@ -22,8 +22,14 @@
 
 \*\* MVC Architecture Setup
 
-10.  schema and model for use in the code
+10. schema and model for use in the code
 11. create seed router for testing
 12. GET/api/users -> isAdmin -> getAllUsers -> search by name, email, phone -> And pagination functionality
 13. Responser Handler by Helper folder success and Error message show
-14. GET/api/users/:id -> get a single user by id 
+14. GET/api/users/:id -> get a single user by id
+15. How to create services in the backend
+16. user id fine by Deleted
+17. refactoring and dynamic
+18. delete image user by helper
+19. POST/api/users/process-register -> process the registration
+20. POST/api/users/verify -> verify + register info

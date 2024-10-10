@@ -8,7 +8,8 @@ const errorResponse = (res, { statusCode = 500, message = "Internal server Error
         })
 }
 
-const successResponse = (res, { statusCode = 200, message = "success", payload = {} }) => {
+const successResponse = (res, 
+    { statusCode = 200, message = "success", payload = {} }) => {
     return res
         .status(statusCode)
         .json({
