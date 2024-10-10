@@ -6,8 +6,9 @@ const createError = require('http-errors')
 const xssClean = require('xss-clean')
 const rateLimit = require('express-rate-limit');
 const { serverPort } = require("./secret");
-const  userRouter  = require("./router/userRouter");
-const  seedRouter  = require("./router/seedRouter");
+const userRouter = require("./router/userRouter");
+const seedRouter = require("./router/seedRouter");
+const { errorResponse } = require("./Helper/responseController");
 
 
 
@@ -54,10 +55,9 @@ app.use((req, res, next) => {
 })
 // server site error handle => all error handle the function
 app.use((err, req, res, next) => {
-    console.error(err.stack)
-    return res.status(err.status || 500).json({
-        success: false,
-        message: err.message,
+    return errorResponse(res, {
+        statusCode: err.status,
+        message: err.message
     })
 })
 module.exports = app;

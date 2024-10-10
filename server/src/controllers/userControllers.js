@@ -1,6 +1,6 @@
 const createError = require("http-errors");
 const { User } = require("../models/userModel");
-const { serverPort } = require("../secret");
+const { successResponse } = require("../Helper/responseController");
 
 
 const getUsers = async (req, res, next) => {
@@ -36,10 +36,10 @@ const getUsers = async (req, res, next) => {
         // search don't mach this search Vealo than error throw
         if (!users) throw createError(404, "user not found !");
 
-        res
-            .status(200)
-            .send({
-                message: `E-commerce server site is running by http://localhost:${serverPort}`,
+        return successResponse(res, {
+            statusCode: 200,
+            message: "user were returned successfully",
+            payload: {
                 users,
                 pagination: {
                     totalPage: Math.ceil(count / limitPage),
@@ -47,7 +47,8 @@ const getUsers = async (req, res, next) => {
                     previousPage: page - 1 > 0 ? page - 1 : null,
                     nextPage: page + 1 <= Math.ceil(count / limitPage) ? page + 1 : null,
                 }
-            })
+            }
+        })
     } catch (error) {
         next(error)
     }

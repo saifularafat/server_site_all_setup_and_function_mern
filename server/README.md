@@ -23,3 +23,7 @@
 \*\* MVC Architecture Setup
 
 10.  schema and model for use in the code
+11. create seed router for testing
+12. GET/api/users -> isAdmin -> getAllUsers -> search by name, email, phone -> And pagination functionality
+13. Responser Handler by Helper folder success and Error message show
+14. GET/api/users/:id -> get a single user by id 
