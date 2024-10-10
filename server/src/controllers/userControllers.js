@@ -1,13 +1,14 @@
 const createError = require("http-errors");
 const { User } = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
+const mongoose = require("mongoose");
 
 
 const getUsers = async (req, res, next) => {
     try {
         const search = req.query.search || "";
         const page = Number(req.query.page) || 1;
-        const limitPage = Number(req.query.limit) || 1;
+        const limitPage = Number(req.query.limit) || 5;
 
         const searchRegExp = new RegExp(".*" + search + ".*", "i");
 
@@ -33,12 +34,12 @@ const getUsers = async (req, res, next) => {
         const count = await User.find(filter).countDocuments();
         // Total page get in an all users END
 
-        // search don't mach this search Vealo than error throw
-        if (!users) throw createError(404, "user not found !");
+        // search don't mach this search Value than error throw
+        if (!users) { throw createError(404, "user not found !") };
 
         return successResponse(res, {
             statusCode: 200,
-            message: "user were returned successfully",
+            message: "users were returned successfully",
             payload: {
                 users,
                 pagination: {
@@ -54,4 +55,26 @@ const getUsers = async (req, res, next) => {
     }
 }
 
-module.exports = { getUsers };
+const getUser = async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const options = { password: 0 };
+        const user = await User.findById(id, options)
+
+        if (!user) { throw createError(404, "user does not exist whit this id") };
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "user were returned successfully",
+            payload: { user }
+        })
+    } catch (error) {
+        if (error instanceof mongoose.Error) {
+            next(createError(404, "Invalid user ID"));
+            return;
+        }
+        next(error)
+    }
+}
+
+module.exports = { getUsers, getUser };
