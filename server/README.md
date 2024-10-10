@@ -1,26 +1,25 @@
 # E-COMMERCE MERN Stack PROJECT
 
-## Environment Setup
+1. Environment Setup
 
-## create Express server setup -> express
+2. create Express server setup -> express
 
-## morgan and POSTMEN setup AND testing
-
-## Third party middleware type and middleware setup & apply
+3. morgan and POSTMEN setup AND testing
+4. Third party middleware type and middleware setup & apply
 
 - app.use(bodyParser.json())
 - app.use(bodyParser.urlencoded({ extended: true }))
 
-## Express Error middleware in the apply project -> body- parser
+5. Express Error middleware in the apply project -> body- parser
 
-## HTTP ERROR Handle by -> http-errors
+6. HTTP ERROR Handle by -> http-errors
 
-## how to secure api limit -> xss-clean, express-rate-limit
+7. how to secure api limit -> xss-clean, express-rate-limit
 
-## environment github this file ignore git push -> github ignore (.gitignore)
+8. environment github this file ignore git push -> github ignore (.gitignore)
 
-## dotenv and install and setup -> npm install dotenv >> require('dotenv').config()
+9. dotenv and install and setup -> npm install dotenv >> require('dotenv').config()
 
 \*\* MVC Architecture Setup
 
-01 > schema and model for use in the code
+10.  schema and model for use in the code
