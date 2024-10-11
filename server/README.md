@@ -33,3 +33,7 @@
 18. delete image user by helper
 19. POST/api/users/process-register -> process the registration
 20. POST/api/users/verify -> verify + register info
+21. smtp setup in the server site 
+    (http://security.google.com/settings/security/apppasswords)
+22. smtp setup and prepare email (npm i nodemailer )
+23. send email

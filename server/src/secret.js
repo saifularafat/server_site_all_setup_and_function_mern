@@ -9,9 +9,14 @@ const defaultUserImagesPath = process.env.DEFAULT_USER_IMAGE || "public/images/u
 
 const jsonActivationKey = process.env.JSON_ACTIVATION_KEY || "59c81f406a6bc9b7390ab0_V6dh5Ajx86mRIHuNQtOY"
 
+const smtpUserName = process.env.SMTP_USERNAME || "";
+const smtpPassword = process.env.SMTP_PASSWORD || "";
+
 module.exports = {
     serverPort,
     mongodbURL,
     defaultUserImagesPath,
-    jsonActivationKey
+    jsonActivationKey,
+    smtpUserName,
+    smtpPassword
 }
