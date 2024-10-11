@@ -7,4 +7,11 @@ const mongodbURL = `mongodb+srv://${process.env.DATA_USER}:${process.env.DATA_PA
 
 const defaultUserImagesPath = process.env.DEFAULT_USER_IMAGE || "public/images/users/userDefault.jpg"
 
-module.exports = { serverPort, mongodbURL, defaultUserImagesPath }
+const jsonActivationKey = process.env.JSON_ACTIVATION_KEY || "59c81f406a6bc9b7390ab0_V6dh5Ajx86mRIHuNQtOY"
+
+module.exports = {
+    serverPort,
+    mongodbURL,
+    defaultUserImagesPath,
+    jsonActivationKey
+}
