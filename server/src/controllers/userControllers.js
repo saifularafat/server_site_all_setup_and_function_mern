@@ -5,7 +5,8 @@ const { successResponse } = require("../Helper/responseController");
 const { findWithId } = require("../services/findItems");
 const { deletedImage } = require("../Helper/deletedImage");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
-const { jsonActivationKey } = require("../secret");
+const { jsonActivationKey, clientUrl } = require("../secret");
+const emailWithNodeMailer = require("../Helper/email");
 
 
 const getUsers = async (req, res, next) => {
@@ -100,21 +101,43 @@ const deleteUserByID = async (req, res, next) => {
 const processRegister = async (req, res, next) => {
     try {
         const { name, email, password, phone, address } = req.body;
+        console.log("EMAIL SENDING  ====> LINE - 1218 ", req.body.email);
 
         const userExists = await User.exists({ email: email });
 
         if (userExists) {
             throw createError(409, "user email already exists. Please Sign in!")
         }
-        
+
         // create jwt token
         const token = createJsonWebToken(
             { name, email, password, phone, address },
             jsonActivationKey,
             "30m")
+
+        // prepare email
+        const emailData = {
+            email,
+            subject: "Account Activation Email",
+            html: `
+            <h2>Hello ${name} !</h2>
+            <p>Please Click Here to <a href="${clientUrl}/api/users/activate/${token}"
+                target="_blank"> Active Your Account</a>
+             </p>
+            `
+        }
+
+        // send email with nodemailer
+        try {
+            await emailWithNodeMailer(emailData)
+        } catch (emailError) {
+            next(createError(500, " Failed to send verification Email"))
+            return;
+        }
+
         return successResponse(res, {
             statusCode: 200,
-            message: "new user create a successfully",
+            message: `Please go to your ${email} for competing your registration process`,
             payload: { token }
         })
     } catch (error) {

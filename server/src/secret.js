@@ -12,11 +12,15 @@ const jsonActivationKey = process.env.JSON_ACTIVATION_KEY || "59c81f406a6bc9b739
 const smtpUserName = process.env.SMTP_USERNAME || "";
 const smtpPassword = process.env.SMTP_PASSWORD || "";
 
+// user interface in the Client site
+const clientUrl = process.env.CLIENT_URL || "";
+
 module.exports = {
     serverPort,
     mongodbURL,
     defaultUserImagesPath,
     jsonActivationKey,
     smtpUserName,
-    smtpPassword
+    smtpPassword,
+    clientUrl
 }
