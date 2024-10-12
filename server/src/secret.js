@@ -22,5 +22,5 @@ module.exports = {
     jsonActivationKey,
     smtpUserName,
     smtpPassword,
-    clientUrl
+    clientUrl,
 }
