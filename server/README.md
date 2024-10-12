@@ -36,4 +36,5 @@
 21. smtp setup in the server site 
     (http://security.google.com/settings/security/apppasswords)
 22. smtp setup and prepare email (npm i nodemailer )
-23. send email
+23. send email by user successful
+24. user verify POST /api/users/verify

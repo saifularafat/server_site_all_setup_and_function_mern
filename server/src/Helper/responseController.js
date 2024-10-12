@@ -8,7 +8,7 @@ const errorResponse = (res, { statusCode = 500, message = "Internal server Error
         })
 }
 
-const successResponse = (res, 
+const successResponse = (res,
     { statusCode = 200, message = "success", payload = {} }) => {
     return res
         .status(statusCode)

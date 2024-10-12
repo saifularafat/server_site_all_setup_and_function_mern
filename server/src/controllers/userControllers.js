@@ -1,4 +1,5 @@
 const createError = require("http-errors");
+const jwt = require("jsonwebtoken")
 
 const { User } = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
@@ -101,7 +102,7 @@ const deleteUserByID = async (req, res, next) => {
 const processRegister = async (req, res, next) => {
     try {
         const { name, email, password, phone, address } = req.body;
-        console.log("EMAIL SENDING  ====> LINE - 1218 ", req.body.email);
+        // console.log("EMAIL SENDING  ====> LINE - 1218 ", req.body.email);
 
         const userExists = await User.exists({ email: email });
 
@@ -111,9 +112,7 @@ const processRegister = async (req, res, next) => {
 
         // create jwt token
         const token = createJsonWebToken(
-            { name, email, password, phone, address },
-            jsonActivationKey,
-            "30m")
+            { name, email, password, phone, address }, jsonActivationKey, "3h")
 
         // prepare email
         const emailData = {
@@ -145,9 +144,49 @@ const processRegister = async (req, res, next) => {
     }
 }
 
+const activateUsersAccount = async (req, res, next) => {
+    try {
+        console.log("Request body serial number 151 :", req.body);
+
+        const token = req.body.token;
+        // console.log("Tooooooken 155 => ", token);
+        if (!token) throw createError(404, 'Token not found!')
+
+        try {
+            const decoded = jwt.verify(token, jsonActivationKey)
+            console.log(decoded);
+            if (!decoded) throw createError(401, 'unable to verify user!')
+
+            const userExists = await User.exists({ email: decoded?.email });
+            if (userExists) {
+                throw createError(409, "user email already exists. Please Sign in!")
+            }
+
+            const userNew = await User.create(decoded);
+            console.log("New Users ===>", userNew);
+            return successResponse(res, {
+                statusCode: 201,
+                message: "user was registered successfully ",
+            })
+        } catch (error) {
+            if (error.name === "TokenExpiredError") {
+                throw createError(401, "Token is Expired")
+            } else if (error.name === "JsonWebTokenError") {
+                throw createError(401, "Invalid Token")
+            } else {
+                throw error
+            }
+        }
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     getUsers,
     getUserById,
     deleteUserByID,
-    processRegister
+    processRegister,
+    activateUsersAccount
 };
