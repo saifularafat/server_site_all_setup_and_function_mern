@@ -8,9 +8,16 @@ const {
     activateUsersAccount,
 } = require("../controllers/userControllers");
 const upload = require("../middlewares/uploadFile");
+const { validatorUserRegistration } = require("../validators/auth");
+const runValidation = require("../validators");
 
 // Get all user router
-userRouter.post("/process-register", upload.single("image"), processRegister);
+userRouter.post("/process-register",
+    upload.single("image"),
+    validatorUserRegistration,
+    runValidation,
+    processRegister);
+
 userRouter.post("/verify", activateUsersAccount);
 userRouter.get("/", getUsers);
 userRouter.get("/:id", getUserById);

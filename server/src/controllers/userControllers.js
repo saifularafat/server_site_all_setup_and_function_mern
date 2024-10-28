@@ -128,7 +128,7 @@ const processRegister = async (req, res, next) => {
 
         // send email with nodemailer
         try {
-            // await emailWithNodeMailer(emailData)
+            await emailWithNodeMailer(emailData)
         } catch (emailError) {
             next(createError(500, " Failed to send verification Email"))
             return;
@@ -146,17 +146,21 @@ const processRegister = async (req, res, next) => {
 
 const activateUsersAccount = async (req, res, next) => {
     try {
-        console.log("Request body serial number 151 :", req.body);
-
         const token = req.body.token;
-        // console.log("Tooooooken 155 => ", token);
+
+        console.log("Tooooooken 155 => ", token);
+
         if (!token) throw createError(404, 'Token not found!')
 
         try {
             const decoded = jwt.verify(token, jsonActivationKey)
-            console.log(decoded);
+
+            console.log("decoded os data ====> 158", decoded);
+
             if (!decoded) throw createError(401, 'unable to verify user!')
 
+            await User.create(decoded);
+            
             const userExists = await User.exists({ email: decoded?.email });
             if (userExists) {
                 throw createError(409, "user email already exists. Please Sign in!")

@@ -23,7 +23,7 @@ const emailWithNodeMailer = async (emailData) => {
         console.log("Message send : %s", info.response);
 
     } catch (error) {
-        console.log("Error occurred while sending email: ", error);
+        console.error("Error occurred while sending email: ", error);
         throw error;
     }
 };
