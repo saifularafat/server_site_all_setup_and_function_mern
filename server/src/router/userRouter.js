@@ -12,7 +12,7 @@ const upload = require("../middlewares/uploadFile");
 const { validatorUserRegistration } = require("../validators/auth");
 const runValidation = require("../validators");
 
-// Get all user router
+// Get, Post, Put, Delete all user router
 userRouter.post("/process-register",
     upload.single("image"),
     validatorUserRegistration,
@@ -23,6 +23,9 @@ userRouter.post("/verify", activateUsersAccount);
 userRouter.get("/", getUsers);
 userRouter.get("/:id", getUserById);
 userRouter.delete("/:id", deleteUserByID);
-userRouter.put("/:id", updateUserByID);
+
+userRouter.put("/:id",
+    upload.single("image"),
+    updateUserByID);
 
 module.exports = userRouter; 

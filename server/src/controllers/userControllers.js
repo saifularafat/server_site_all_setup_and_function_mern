@@ -9,7 +9,7 @@ const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonActivationKey, clientUrl } = require("../secret");
 const emailWithNodeMailer = require("../Helper/email");
 
-
+// all users 
 const getUsers = async (req, res, next) => {
     try {
         const search = req.query.search || "";
@@ -59,6 +59,7 @@ const getUsers = async (req, res, next) => {
     }
 }
 
+// single user information by ID
 const getUserById = async (req, res, next) => {
     try {
         const id = req.params.id;
@@ -74,7 +75,7 @@ const getUserById = async (req, res, next) => {
     }
 }
 
-
+// user delete by ID
 const deleteUserByID = async (req, res, next) => {
     try {
         const id = req.params.id;
@@ -99,15 +100,22 @@ const deleteUserByID = async (req, res, next) => {
     }
 }
 
+// user register process by user
 const processRegister = async (req, res, next) => {
     try {
         const { name, email, password, phone, address } = req.body;
         // console.log("EMAIL SENDING  ====> LINE - 1218 ", req.body.email);
-
-        if (!req.file) {
+        const image = req.file;
+        // check the image filed 
+        if (!image) {
             throw createError(400, "Image file is required!")
         }
-        const imageBufferString = req.file.buffer.toString('base64');
+        // check the image size 
+        if (image.size > 1024 * 1024 * 2) {
+            throw createError(400, "Image file is too large. It must be less than 2 MB.")
+        }
+
+        const imageBufferString = image.buffer.toString('base64');
 
         const userExists = await User.exists({ email: email });
 
@@ -149,6 +157,7 @@ const processRegister = async (req, res, next) => {
     }
 }
 
+// user active by Account
 const activateUsersAccount = async (req, res, next) => {
     try {
         const token = req.body.token;
@@ -192,8 +201,47 @@ const activateUsersAccount = async (req, res, next) => {
     }
 }
 
+// user update by ID
+const updateUserByID = async (req, res, next) => {
+    try {
+        const updateId = req.params.id;
+        const options = { password: 0 };
+        await findWithId(User, updateId, options);
+        const updateOptions = { new: true, runValidators: true, context: 'query' };
+        let updates = {}
+        // name, email, password, image, phone, address
+        for (let key in req.body) {
+            if (['name', 'password', 'phone', 'address'].includes(key)) {
+                updates[key] = req.body[key];
+            }
+            else if (['email'].includes(key)) {
+                throw new Error("Email can not be updated.")
+            }
+        }
+        // image update verify
+        const image = req.file;
+        if (image) {
+            if (image.size > 1024 * 1024 * 2) {
+                throw createError(400, "Image file is too large. It must be less than 2 MB.")
+            }
+            updates.image = image.buffer.toString('base64')
+        }
 
+        const updatedUser = await User.findByIdAndUpdate(updateId, updates, updateOptions)
+            .select('-password');
+        if (!updatedUser) {
+            throw createError(404, "User with this ID dons not exist.")
+        }
 
+        return successResponse(res, {
+            statusCode: 200,
+            message: "user was update successfully",
+            payload: updates
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
 
 module.exports = {
