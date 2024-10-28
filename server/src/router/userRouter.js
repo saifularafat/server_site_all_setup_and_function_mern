@@ -6,6 +6,7 @@ const {
     getUserById,
     processRegister,
     activateUsersAccount,
+    updateUserByID,
 } = require("../controllers/userControllers");
 const upload = require("../middlewares/uploadFile");
 const { validatorUserRegistration } = require("../validators/auth");
@@ -22,5 +23,6 @@ userRouter.post("/verify", activateUsersAccount);
 userRouter.get("/", getUsers);
 userRouter.get("/:id", getUserById);
 userRouter.delete("/:id", deleteUserByID);
+userRouter.put("/:id", updateUserByID);
 
 module.exports = userRouter; 

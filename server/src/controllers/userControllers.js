@@ -104,6 +104,11 @@ const processRegister = async (req, res, next) => {
         const { name, email, password, phone, address } = req.body;
         // console.log("EMAIL SENDING  ====> LINE - 1218 ", req.body.email);
 
+        if (!req.file) {
+            throw createError(400, "Image file is required!")
+        }
+        const imageBufferString = req.file.buffer.toString('base64');
+
         const userExists = await User.exists({ email: email });
 
         if (userExists) {
@@ -112,7 +117,7 @@ const processRegister = async (req, res, next) => {
 
         // create jwt token
         const token = createJsonWebToken(
-            { name, email, password, phone, address }, jsonActivationKey, "3h")
+            { name, email, password, phone, address, image: imageBufferString }, jsonActivationKey, "3h")
 
         // prepare email
         const emailData = {
@@ -160,7 +165,7 @@ const activateUsersAccount = async (req, res, next) => {
             if (!decoded) throw createError(401, 'unable to verify user!')
 
             await User.create(decoded);
-            
+
             const userExists = await User.exists({ email: decoded?.email });
             if (userExists) {
                 throw createError(409, "user email already exists. Please Sign in!")
@@ -187,10 +192,15 @@ const activateUsersAccount = async (req, res, next) => {
     }
 }
 
+
+
+
+
 module.exports = {
     getUsers,
     getUserById,
     deleteUserByID,
+    updateUserByID,
     processRegister,
     activateUsersAccount
 };
