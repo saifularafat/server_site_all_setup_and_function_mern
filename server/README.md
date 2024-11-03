@@ -33,8 +33,16 @@
 18. delete image user by helper
 19. POST/api/users/process-register -> process the registration
 20. POST/api/users/verify -> verify + register info
-21. smtp setup in the server site 
+21. smtp setup in the server site
     (http://security.google.com/settings/security/apppasswords)
 22. smtp setup and prepare email (npm i nodemailer )
 23. send email by user successful
-24. user verify POST /api/users/verify
+24. user verify POST /api/users/activate
+    !user login in the server site setup now
+    !user login check the email and password and is the user isBanned
+    !setup in the user create jwt token and all data by http cookie
+    !user log out server site setup now
+25. user verify POST /api/auth/login
+    !user logout then user set is a cookie key is clear and empty now
+26. user verify POST /api/auth/logout
+
