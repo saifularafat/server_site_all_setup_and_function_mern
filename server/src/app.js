@@ -7,6 +7,7 @@ const xssClean = require('xss-clean')
 const rateLimit = require('express-rate-limit');
 const { serverPort } = require("./secret");
 const userRouter = require("./router/userRouter");
+const authRouter = require("./router/authRouter");
 const seedRouter = require("./router/seedRouter");
 const { errorResponse } = require("./Helper/responseController");
 
@@ -26,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(rateLimitApi);
 
 app.use("/api/users", userRouter);
+app.use("/api/auth", authRouter);
 app.use("/api/seed", seedRouter);
 
 

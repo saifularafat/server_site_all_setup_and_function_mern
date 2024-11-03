@@ -8,6 +8,7 @@ const mongodbURL = `mongodb+srv://${process.env.DATA_USER}:${process.env.DATA_PA
 const defaultUserImagesPath = process.env.DEFAULT_USER_IMAGE || "public/images/users/userDefault.jpg"
 
 const jsonActivationKey = process.env.JSON_ACTIVATION_KEY || "59c81f406a6bc9b7390ab0_V6dh5Ajx86mRIHuNQtOY"
+const jsonAccessKey = process.env.JSON_ACCESS_KEY || "59c81f406a6bc9b7390ab0_Vhb0125pA84963sdx86mRIHuNQtOY"
 
 const smtpUserName = process.env.SMTP_USERNAME || "";
 const smtpPassword = process.env.SMTP_PASSWORD || "";
@@ -23,4 +24,5 @@ module.exports = {
     smtpUserName,
     smtpPassword,
     clientUrl,
+    jsonAccessKey
 }

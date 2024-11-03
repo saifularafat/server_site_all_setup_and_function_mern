@@ -1,7 +1,7 @@
 const createError = require("http-errors");
 const jwt = require("jsonwebtoken")
 
-const { User } = require("../models/userModel");
+const User = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
 const { findWithId } = require("../services/findItems");
 const { deletedImage } = require("../Helper/deletedImage");
@@ -9,7 +9,7 @@ const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonActivationKey, clientUrl } = require("../secret");
 const emailWithNodeMailer = require("../Helper/email");
 
-// all users 
+// ! all users 
 const getUsers = async (req, res, next) => {
     try {
         const search = req.query.search || "";
@@ -59,7 +59,7 @@ const getUsers = async (req, res, next) => {
     }
 }
 
-// single user information by ID
+// ! single user information by ID
 const getUserById = async (req, res, next) => {
     try {
         const id = req.params.id;
@@ -75,7 +75,7 @@ const getUserById = async (req, res, next) => {
     }
 }
 
-// user delete by ID
+// ! user delete by ID
 const deleteUserByID = async (req, res, next) => {
     try {
         const id = req.params.id;
@@ -100,7 +100,7 @@ const deleteUserByID = async (req, res, next) => {
     }
 }
 
-// user register process by user
+// ! user register process by user
 const processRegister = async (req, res, next) => {
     try {
         const { name, email, password, phone, address } = req.body;
@@ -125,7 +125,9 @@ const processRegister = async (req, res, next) => {
 
         // create jwt token
         const token = createJsonWebToken(
-            { name, email, password, phone, address, image: imageBufferString }, jsonActivationKey, "3h")
+            { name, email, password, phone, address, image: imageBufferString },
+            jsonActivationKey,
+            "3h")
 
         // prepare email
         const emailData = {
@@ -141,7 +143,8 @@ const processRegister = async (req, res, next) => {
 
         // send email with nodemailer
         try {
-            await emailWithNodeMailer(emailData)
+            // * unComment now
+            // await emailWithNodeMailer(emailData)
         } catch (emailError) {
             next(createError(500, " Failed to send verification Email"))
             return;
@@ -150,30 +153,28 @@ const processRegister = async (req, res, next) => {
         return successResponse(res, {
             statusCode: 200,
             message: `Please go to your ${email} for competing your registration process`,
-            payload: { token }
+            payload: token,
         })
     } catch (error) {
         next(error)
     }
 }
 
-// user active by Account
+// ! user active by Account
 const activateUsersAccount = async (req, res, next) => {
     try {
         const token = req.body.token;
 
-        console.log("Tooooooken 155 => ", token);
+        // console.log("Tooooooken 155 => ", token);
 
         if (!token) throw createError(404, 'Token not found!')
 
         try {
             const decoded = jwt.verify(token, jsonActivationKey)
 
-            console.log("decoded os data ====> 158", decoded);
+            // console.log("decoded os data ====> 158", decoded);
 
             if (!decoded) throw createError(401, 'unable to verify user!')
-
-            await User.create(decoded);
 
             const userExists = await User.exists({ email: decoded?.email });
             if (userExists) {
@@ -201,7 +202,7 @@ const activateUsersAccount = async (req, res, next) => {
     }
 }
 
-// user update by ID
+// ! user update by ID
 const updateUserByID = async (req, res, next) => {
     try {
         const updateId = req.params.id;

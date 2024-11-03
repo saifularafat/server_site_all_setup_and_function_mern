@@ -24,9 +24,14 @@ const userSchema = new Schema({
     },
     password: {
         type: String,
-        required: [true, "user password is required"],
-        minlength: [8, "The length of user Password can be minimum 8 character"],
-        Set: (v) => bcrypt.hashSync(v, bcrypt.genSaltSync(10))
+        required: [true, "User password is required"],
+        minlength: [8, "The length of user password must be at least 8 characters"],
+        validate: {
+            validator: function (v) {
+                return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(v);
+            },
+            message: "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+        }
     },
     image: {
         type: Buffer,
@@ -60,6 +65,18 @@ const userSchema = new Schema({
     },
 }, { timestamps: true })
 
+
+
+// Pre-save hook to hash password
+userSchema.pre("save", async function (next) {
+    // Check if the password is modified (for example, during update)
+    if (!this.isModified("password")) return next();
+
+    // Hash the password
+    this.password = await bcrypt.hash(this.password, 10);
+    next();
+});
+
 const User = model("Users", userSchema)
 
-module.exports = { User }
+module.exports = User;
