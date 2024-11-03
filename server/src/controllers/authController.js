@@ -59,10 +59,26 @@ const handleLogin = async (req, res, next) => {
         return successResponse(res, {
             statusCode: 200,
             message: "user logged in successfully",
-            payload: {user}
+            payload: { user }
         })
     } catch (error) {
         next(error)
     }
 }
-module.exports = { handleLogin }
+
+
+const handleLogout = async (req, res, next) => {
+    console.log("jdncio uznoivsdjps TOP", req.body);
+    try {
+        // success responsive
+        res.clearCookie("access_token");
+        return successResponse(res, {
+            statusCode: 200,
+            message: "user logout is successfully",
+            payload: { }
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+module.exports = { handleLogin, handleLogout }

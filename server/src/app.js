@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const app = express();
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
@@ -20,6 +21,7 @@ const rateLimitApi = rateLimit({
     message: "To many requests from this IP. please try agin later"
 })
 
+app.use(cookieParser())
 app.use(xssClean())
 app.use(morgan("dev"))
 app.use(bodyParser.json())
