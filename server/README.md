@@ -45,4 +45,5 @@
 25. user verify POST /api/auth/login
     !user logout then user set is a cookie key is clear and empty now
 26. user verify POST /api/auth/logout
-
+27. Middlewares -> isLoggedIn, isLoggedOut, isAdmin
+28. Get/api/auth/refresh -> refresh the token

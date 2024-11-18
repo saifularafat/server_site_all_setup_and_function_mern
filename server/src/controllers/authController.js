@@ -15,9 +15,9 @@ const handleLogin = async (req, res, next) => {
         // email, password get the req.body
         const { email, password } = req.body;
         // user email is Exist
-        // console.log("jdncio uznoivsdjps", email);
-
+        
         const user = await User.findOne({ email });
+        // console.log("jdncio uznoivsdjps controller", user);
         if (!user) {
             throw createError(
                 404,
@@ -45,7 +45,7 @@ const handleLogin = async (req, res, next) => {
 
         // create jwt token
         const accessToken = createJsonWebToken(
-            { email },
+            { _id: user?._id },
             jsonAccessKey,
             "3h");
         // set up local stor token in the HTTP cookie

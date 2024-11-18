@@ -11,6 +11,7 @@ const {
 const userImageUpload = require("../middlewares/uploadFile");
 const { validatorUserRegistration } = require("../validators/auth");
 const runValidation = require("../validators");
+const { isLoggedIn } = require("../middlewares/auth");
 
 // !Get, Post, Put, Delete all user router
 userRouter.post("/process-register",
@@ -20,9 +21,9 @@ userRouter.post("/process-register",
     processRegister);
 
 userRouter.post("/activate", activateUsersAccount);
-userRouter.get("/", getUsers);
-userRouter.get("/:id", getUserById);
-userRouter.delete("/:id", deleteUserByID);
+userRouter.get("/", isLoggedIn, getUsers);
+userRouter.get("/:id", isLoggedIn, getUserById);
+userRouter.delete("/:id", isLoggedIn, deleteUserByID);
 
 userRouter.put("/:id",
     userImageUpload.single("image"),
