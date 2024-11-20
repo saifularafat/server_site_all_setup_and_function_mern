@@ -3,22 +3,39 @@ const jwt = require("jsonwebtoken");
 const { jsonAccessKey } = require("../secret");
 
 const isLoggedIn = async (req, res, next) => {
-    console.log(res);
     try {
-        const token = req.cookies.access_token;
-        if (!token) {
-            throw createError(401, 'Access token not found..!')
+        const accessToken = req.cookies.access_token;
+        if (!accessToken) {
+            throw createError(401, 'Access token not found.Please Log in..!')
         }
-        const decoded = jwt.verify(token, jsonAccessKey)
+        const decoded = jwt.verify(accessToken, jsonAccessKey)
         if (!decoded) {
             throw createError(401, 'Invalid access token. Please login Again.!')
         }
-        res.userId == decoded._id;
-
-        console.log('=======decodeddddddd', decoded);
-        // console.log('=======isLoggedIn', token);
+        console.log("object=======>", decoded);
+        // res.userId == decoded._id;
+        next()
     } catch (error) {
         return next(error)
     }
 }
-module.exports = { isLoggedIn }
+
+const isLoggedOut = async (req, res, next) => {
+    try {
+        const accessToken = req.cookies.access_token;
+        if (accessToken) {
+            try {
+                const decoded = jwt.verify(accessToken, jsonAccessKey)
+                if (decoded) {
+                    throw createError(400, 'User is already loggedIn..!');
+                }
+            } catch (error) {
+                throw error;
+            }
+        }
+        next();
+    } catch (error) {
+        return next(error);
+    }
+}
+module.exports = { isLoggedIn, isLoggedOut }

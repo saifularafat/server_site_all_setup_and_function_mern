@@ -15,7 +15,7 @@ const handleLogin = async (req, res, next) => {
         // email, password get the req.body
         const { email, password } = req.body;
         // user email is Exist
-        
+
         const user = await User.findOne({ email });
         // console.log("jdncio uznoivsdjps controller", user);
         if (!user) {
@@ -45,7 +45,7 @@ const handleLogin = async (req, res, next) => {
 
         // create jwt token
         const accessToken = createJsonWebToken(
-            { _id: user?._id },
+            { user },
             jsonAccessKey,
             "3h");
         // set up local stor token in the HTTP cookie
@@ -75,7 +75,7 @@ const handleLogout = async (req, res, next) => {
         return successResponse(res, {
             statusCode: 200,
             message: "user logout is successfully",
-            payload: { }
+            payload: {}
         })
     } catch (error) {
         next(error)
