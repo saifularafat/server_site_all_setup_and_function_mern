@@ -1,67 +1,87 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
-const app = express();
-const morgan = require('morgan')
-const bodyParser = require('body-parser')
-const createError = require('http-errors')
-const xssClean = require('xss-clean')
-const rateLimit = require('express-rate-limit');
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+const createError = require("http-errors");
+const xssClean = require("xss-clean");
+const rateLimit = require("express-rate-limit");
 const { serverPort } = require("./secret");
 const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
 const seedRouter = require("./router/seedRouter");
 const { errorResponse } = require("./Helper/responseController");
 
+const app = express();
 
-
-// api het by limit show data
+// API request rate limiter
 const rateLimitApi = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10,
-    message: "To many requests from this IP. please try agin later"
-})
+    max: 10, // Max 10 requests per IP
+    message: "Too many requests from this IP. Please try again later.",
+});
 
-app.use(cookieParser())
-app.use(xssClean())
-app.use(morgan("dev"))
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+// Limit body size
+const bodyParserOptions = {
+    limit: "100kb",
+};
+
+app.use(cookieParser());
+app.use(xssClean());
+app.use(morgan("dev"));
+app.use(bodyParser.json(bodyParserOptions));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(rateLimitApi);
 
+// Middleware to check for large headers
+app.use((req, res, next) => {
+    const maxHeaderSize = 100 * 1024; //100 KB in bytes
+    const headersSize = JSON.stringify(req.headers).length;
+
+    console.log(`Headers size: ${headersSize} bytes`); // Debugging
+
+    if (headersSize > maxHeaderSize) {
+        return res.status(431).json({
+            status: "error",
+            message: `Request Header Fields Too Large. Current size: ${headersSize} bytes. Limit: ${maxHeaderSize} bytes.`,
+        });
+    }
+    next();
+});
+
+// Router API
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/seed", seedRouter);
 
-
-// middleware 
+// Middleware for authentication
 const isLoggedIn = (req, res, next) => {
-    const login = true
+    const login = true; // Dummy authentication check
     if (login) {
-        req.body.id = 101
-        next()
+        req.body.id = 101; // Add user ID to the request body
+        next();
     } else {
-        return res.status(401).json(" Please login first Then try agin")
+        return res.status(401).json("Please login first, then try again.");
     }
-}
+};
 
-
+// Root route
 app.get("/", (req, res) => {
-    res.
-        status(200).
-        send(`E-commerce server site is running by http://localhost:${serverPort}`)
-})
+    res
+        .status(200)
+        .send(`E-commerce server site is running at http://localhost:${serverPort}`);
+});
 
-
-
-// client site error handle
+// Client-side error handling
 app.use((req, res, next) => {
-    next(createError(404, "router not found.!"));
-})
-// server site error handle => all error handle the function
+    next(createError(404, "Route not found."));
+});
+
+// Server-side error handling
 app.use((err, req, res, next) => {
     return errorResponse(res, {
-        statusCode: err.status,
-        message: err.message
-    })
-})
+        statusCode: err.status || 500,
+        message: err.message || "Internal Server Error",
+    });
+});
+
 module.exports = app;

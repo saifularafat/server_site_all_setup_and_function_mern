@@ -12,11 +12,11 @@ const isLoggedIn = async (req, res, next) => {
         if (!decoded) {
             throw createError(401, 'Invalid access token. Please login Again.!')
         }
-        console.log("object=======>", decoded);
-        // res.userId == decoded._id;
-        next()
+        // console.log("object=======>", decoded);
+        res.user == decoded.user;
+        next();
     } catch (error) {
-        return next(error)
+        return next(error);
     }
 }
 
