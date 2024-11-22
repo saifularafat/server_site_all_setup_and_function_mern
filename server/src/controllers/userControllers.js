@@ -62,6 +62,7 @@ const getUsers = async (req, res, next) => {
 // ! single user information by ID
 const getUserById = async (req, res, next) => {
     try {
+        // console.log('object Get By id  Know user TOTOT 65------>',  req.user);
         const id = req.params.id;
         const options = { password: 0 };
         const user = await findWithId(User, id, options);

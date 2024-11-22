@@ -41,11 +41,23 @@ const handleLogin = async (req, res, next) => {
             )
         }
 
-        // token, cookie
+        // token, cookie without image
+        const userInfo = {
+            _id: user?._id,
+            email: user?.email,
+            name: user?.name,
+            phone: user?.phone,
+            address: user?.address,
+            isAdmin: user?.isAdmin,
+            isInstructor: user?.isInstructor,
+            isBanned: user?.isBanned,
+            createdAt: user?.createdAt,
+            updatedAt: user?.updatedAt,
+        }
 
         // create jwt token
         const accessToken = createJsonWebToken(
-            { _id: user?._id },
+            { user: userInfo },
             jsonAccessKey,
             "3h");
         // set up local stor token in the HTTP cookie
