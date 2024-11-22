@@ -37,7 +37,7 @@ app.use((req, res, next) => {
     const maxHeaderSize = 100 * 1024; //100 KB in bytes
     const headersSize = JSON.stringify(req.headers).length;
 
-    console.log(`Headers size: ${headersSize} bytes`); // Debugging
+    console.log(`Headers size: ${headersSize} bytes`); 
 
     if (headersSize > maxHeaderSize) {
         return res.status(431).json({

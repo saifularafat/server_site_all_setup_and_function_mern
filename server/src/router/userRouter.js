@@ -21,10 +21,18 @@ userRouter.post("/process-register",
     runValidation,
     processRegister);
 
-userRouter.post("/activate", isLoggedOut, activateUsersAccount);
-userRouter.get("/", isLoggedIn, getUsers);
-userRouter.get("/:id", isLoggedIn, getUserById);
-userRouter.delete("/:id", isLoggedIn, deleteUserByID);
+userRouter.post("/activate",
+    // isLoggedOut,
+    activateUsersAccount);
+userRouter.get("/",
+    // isLoggedIn,
+    getUsers);
+userRouter.get("/:id",
+    // isLoggedIn,
+    getUserById);
+userRouter.delete("/:id",
+    // isLoggedIn,
+    deleteUserByID);
 
 userRouter.put("/:id",
     userImageUpload.single("image"),

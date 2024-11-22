@@ -45,7 +45,7 @@ const handleLogin = async (req, res, next) => {
 
         // create jwt token
         const accessToken = createJsonWebToken(
-            { user },
+            { _id: user?._id },
             jsonAccessKey,
             "3h");
         // set up local stor token in the HTTP cookie
