@@ -100,7 +100,6 @@ const deleteUserByID = async (req, res, next) => {
 const processRegister = async (req, res, next) => {
     try {
         const { name, email, password, phone, address } = req.body;
-        // console.log("EMAIL SENDING  ====> LINE - 1218 ", req.body.email);
         const image = req.file;
         // check the image filed 
         if (!image) {
@@ -161,14 +160,10 @@ const activateUsersAccount = async (req, res, next) => {
     try {
         const token = req.body.token;
 
-        // console.log("Tooooooken 155 => ", token);
-
         if (!token) throw createError(404, 'Token not found!')
 
         try {
             const decoded = jwt.verify(token, jsonActivationKey)
-
-            // console.log("decoded os data ====> 158", decoded);
 
             if (!decoded) throw createError(401, 'unable to verify user!')
 
@@ -178,7 +173,6 @@ const activateUsersAccount = async (req, res, next) => {
             }
 
             const userNew = await User.create(decoded);
-            console.log("New Users ===>", userNew);
             return successResponse(res, {
                 statusCode: 201,
                 message: "user was registered successfully ",
@@ -240,6 +234,52 @@ const updateUserByID = async (req, res, next) => {
     }
 }
 
+// ? user Ban by ID
+const handelBanUserById = async (req, res, next) => {
+    try {
+        const updateId = req.params.id;
+        await findWithId(User, updateId);
+        const updates = { isBanned: true };
+        const updateOptions = { new: true, runValidators: true, context: 'query' };
+
+        const updatedUser = await User.findByIdAndUpdate(updateId, updates, updateOptions)
+            .select('-password');
+        if (!updatedUser) {
+            throw createError(400, "User was not banned successfully.")
+        }
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "user was banned successfully",
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// ? user UnBan by ID
+const handelUnBanUserById = async (req, res, next) => {
+    try {
+        const updateId = req.params.id;
+        await findWithId(User, updateId);
+        const updates = { isBanned: false };
+        const updateOptions = { new: true, runValidators: true, context: 'query' };
+
+        const updatedUser = await User.findByIdAndUpdate(updateId, updates, updateOptions)
+            .select('-password');
+        if (!updatedUser) {
+            throw createError(400, "User was not unbanned successfully.")
+        }
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "user was unbanned successfully",
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
     getUsers,
@@ -247,5 +287,7 @@ module.exports = {
     deleteUserByID,
     updateUserByID,
     processRegister,
-    activateUsersAccount
+    activateUsersAccount,
+    handelBanUserById,
+    handelUnBanUserById
 };

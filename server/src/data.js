@@ -5,24 +5,27 @@ const data = {
         {
             name: "saiful islam",
             email: "saifulislam@gmail.com",
-            password: "0123456789",
+            password: "Saiful0123456@",
             phone: "01823456789",
             address: "comilla, Chittagong",
+            image: 'default.png'
         },
         {
             name: "Islam",
             email: "islam123@gmail.com",
-            password: "012345745",
+            password: "Saiful0123456@",
             phone: "018587525579",
             address: "Feni, Chittagong",
+            image: 'default.png'
         },
         {
             name: "Arafat",
             email: "arafat234@gmail.com",
-            password: "011234389",
+            password: "Saiful0123456@",
             phone: "018555446789",
             address: "B-Baria, Chittagong",
+            image: 'default.png'
         },
     ]
 }
-module.exports = { data }
+module.exports = data; 

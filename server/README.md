@@ -47,3 +47,9 @@
 26. user verify POST /api/auth/logout
 27. Middlewares -> isLoggedIn, isLoggedOut, isAdmin
 28. Get/api/auth/refresh -> refresh the token
+29. login input validation and code refactoring
+30. Put/api/user/ban-user -> user Ban
+31. Put/api/user/unBan-user -> user UnBan
+31. Put/api/user/update-password -> Update user Password
+31. Put/api/user/forget-password -> forget this user Password
+31. Put/api/user/reset-password -> Reset this user Password
