@@ -235,45 +235,31 @@ const updateUserByID = async (req, res, next) => {
 }
 
 // ? user Ban by ID
-const handelBanUserById = async (req, res, next) => {
+const handelManageUserBanAndUnBanById = async (req, res, next) => {
     try {
         const updateId = req.params.id;
-        await findWithId(User, updateId);
-        const updates = { isBanned: true };
+        const action = req.body.action;
+
+        let update;
+
+        if (action === 'ban') {
+            update = { isBanned: true };
+        } else if (action === 'unBan') {
+            update = { isBanned: false };
+        } else {
+            throw createError(400, 'Invalid action, Please select Ban and Unban option.')
+        }
         const updateOptions = { new: true, runValidators: true, context: 'query' };
 
-        const updatedUser = await User.findByIdAndUpdate(updateId, updates, updateOptions)
+        const updatedUser = await User.findByIdAndUpdate(updateId, update, updateOptions)
             .select('-password');
         if (!updatedUser) {
-            throw createError(400, "User was not banned successfully.")
+            throw createError(400, `User was not ${action} successfully.`)
         }
 
         return successResponse(res, {
             statusCode: 200,
-            message: "user was banned successfully",
-        })
-    } catch (error) {
-        next(error)
-    }
-}
-
-// ? user UnBan by ID
-const handelUnBanUserById = async (req, res, next) => {
-    try {
-        const updateId = req.params.id;
-        await findWithId(User, updateId);
-        const updates = { isBanned: false };
-        const updateOptions = { new: true, runValidators: true, context: 'query' };
-
-        const updatedUser = await User.findByIdAndUpdate(updateId, updates, updateOptions)
-            .select('-password');
-        if (!updatedUser) {
-            throw createError(400, "User was not unbanned successfully.")
-        }
-
-        return successResponse(res, {
-            statusCode: 200,
-            message: "user was unbanned successfully",
+            message: `user was ${action} successfully`,
         })
     } catch (error) {
         next(error)
@@ -288,6 +274,5 @@ module.exports = {
     updateUserByID,
     processRegister,
     activateUsersAccount,
-    handelBanUserById,
-    handelUnBanUserById
+    handelManageUserBanAndUnBanById,
 };
