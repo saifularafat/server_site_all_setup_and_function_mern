@@ -10,12 +10,9 @@ const { access } = require("fs");
 
 
 const handleLogin = async (req, res, next) => {
-    // console.log("jdncio uznoivsdjps TOP", req.body);
     try {
-        // email, password get the req.body
         const { email, password } = req.body;
         // user email is Exist
-
         const user = await User.findOne({ email });
         // console.log("jdncio uznoivsdjps controller", user);
         if (!user) {
@@ -25,7 +22,6 @@ const handleLogin = async (req, res, next) => {
             )
         }
         // compare to password
-        // console.log("object-=----->", user.password);
         const isPasswordMatch = await bcrypt.compare(password, user.password);
         if (!isPasswordMatch) {
             throw createError(
@@ -64,14 +60,15 @@ const handleLogin = async (req, res, next) => {
         res.cookie("access_token", accessToken, {
             maxAge: 180 * 60 * 1000, // 3 house
             httpOnly: true,
-            // secure: true,
             sameSite: 'none'
         })
+
+        const userWithoutPassword = await User.findOne({ email }).select('-password');
         // success responsive
         return successResponse(res, {
             statusCode: 200,
             message: "user logged in successfully",
-            payload: { user }
+            payload: { userWithoutPassword }
         })
     } catch (error) {
         next(error)
