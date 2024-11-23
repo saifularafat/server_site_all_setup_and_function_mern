@@ -13,7 +13,7 @@ const isLoggedIn = async (req, res, next) => {
             throw createError(401, 'Invalid access token. Please login Again.!')
         }
         // console.log("object 0015 =======>", decoded.user);
-        req.body.user == decoded?.user;
+        req.user = decoded.user;
         next();
     } catch (error) {
         return next(error);
@@ -44,9 +44,9 @@ const isLoggedOut = async (req, res, next) => {
 const isAdmin = async (req, res, next) => {
     try {
         console.log("object Is Admin Upcoming", req.user?.isAdmin);
-        // if (!req.user.isAdmin) {
-        //     throw createError(403, 'Forbidden. You must be an admin to access this resource.')
-        // }
+        if (!req.user.isAdmin) {
+            throw createError(403, 'Forbidden. You must be an admin to access this resource.')
+        }
         next();
     } catch (error) {
         return next(error);

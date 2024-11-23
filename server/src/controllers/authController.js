@@ -80,7 +80,6 @@ const handleLogin = async (req, res, next) => {
 
 
 const handleLogout = async (req, res, next) => {
-    console.log("jdncio uznoivsdjps TOP", req.body);
     try {
         // success responsive
         res.clearCookie("access_token");
