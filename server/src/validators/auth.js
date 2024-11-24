@@ -42,7 +42,7 @@ const validatorUserRegistration = [
         .withMessage("User image is required"),
 ]
 
-// input validator 
+// login validator 
 const validatorUserLogin = [
     body('email')
         .trim()
@@ -82,8 +82,19 @@ const validatorUserUpdatePassword = [
 
 ]
 
+// login validator 
+const validatorUserForgetPassword = [
+    body('email')
+        .trim()
+        .notEmpty()
+        .withMessage("Email is required, Enter your Email")
+        .isEmail()
+        .withMessage("Invalid email address!"),
+]
+
 module.exports = {
     validatorUserRegistration,
     validatorUserLogin,
-    validatorUserUpdatePassword
+    validatorUserUpdatePassword,
+    validatorUserForgetPassword,
 }

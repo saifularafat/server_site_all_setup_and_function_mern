@@ -7,9 +7,9 @@ const { successResponse } = require("../Helper/responseController");
 const { findWithId } = require("../services/findItems");
 const { deletedImage } = require("../Helper/deletedImage");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
-const { jsonActivationKey, clientUrl } = require("../secret");
+const { jsonActivationKey, clientUrl, jwtResetPasswordKey } = require("../secret");
 const emailWithNodeMailer = require("../Helper/email");
-const { handelUserAction, updateUserPasswordById } = require("../services/usersService");
+const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail } = require("../services/usersService");
 
 // ! all users 
 const getUsers = async (req, res, next) => {
@@ -277,6 +277,22 @@ const handelUpdatePassword = async (req, res, next) => {
     }
 }
 
+// ! user update Password by ID
+const handelForgetPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const token = await forgetPasswordByEmail(email)
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: `Please go to your ${email} for resting in the password`,
+            payload: token,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
     getUsers,
@@ -287,4 +303,5 @@ module.exports = {
     activateUsersAccount,
     handelManageUserBanAndUnBanById,
     handelUpdatePassword,
+    handelForgetPassword,
 };

@@ -4,7 +4,11 @@ const bcrypt = require("bcryptjs");
 
 
 const User = require("../models/userModel");
+const { createJsonWebToken } = require("../Helper/jsonwebtoken");
+const { jwtResetPasswordKey, clientUrl } = require("../secret");
+const emailWithNodeMailer = require("../Helper/email");
 
+// user Ban and UnBan service handel
 const handelUserAction = async (userId, action) => {
     try {
         let update;
@@ -28,10 +32,7 @@ const handelUserAction = async (userId, action) => {
     }
 }
 
-module.exports = { handelUserAction };
-
-
-
+// user password update service handel
 const updateUserPasswordById = async (userId, email, oldPassword, newPassword, confirmedPassword) => {
     try {
         const user = await User.findOne({ email: email });
@@ -68,8 +69,53 @@ const updateUserPasswordById = async (userId, email, oldPassword, newPassword, c
         }
         return updatedUser;
     } catch (error) {
+        if (error instanceof mongoose.Error.CastError) {
+            throw createError(400, 'Invalid Id')
+        }
         throw (error);
     }
 }
 
-module.exports = { handelUserAction, updateUserPasswordById }
+// user forget Password By email service handel
+const forgetPasswordByEmail = async (email) => {
+    try {
+        const userData = await User.findOne({ email: email });
+        if (!userData) {
+            throw createError(
+                404,
+                'Email is incorrect or you have not verified your Email address. Please register First'
+            )
+        }
+
+        // create jwt token
+        const token = createJsonWebToken(
+            { email },
+            jwtResetPasswordKey,
+            "10m")
+
+        // prepare email
+        const emailData = {
+            email,
+            subject: "Reset Password Email",
+            html: `
+    <h2>Hello ${userData.name} !</h2>
+    <p>Please Click Here to <a href="${clientUrl}/api/users/reset-password/${token}"
+        target="_blank"> Reset your password</a>
+     </p>
+    `
+        }
+
+        // send email with nodemailer
+        emailWithNodeMailer(emailData)
+        return token;
+
+    } catch (error) {
+        throw (error);
+    }
+}
+
+module.exports = {
+    handelUserAction,
+    updateUserPasswordById,
+    forgetPasswordByEmail,
+}
