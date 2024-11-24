@@ -1,5 +1,9 @@
-const User = require("../models/userModel");
 const createError = require("http-errors");
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+
+
+const User = require("../models/userModel");
 
 const handelUserAction = async (userId, action) => {
     try {
@@ -28,9 +32,17 @@ module.exports = { handelUserAction };
 
 
 
-const updateUserPasswordById = async (userId, oldPassword) => {
+const updateUserPasswordById = async (userId, email, oldPassword, newPassword, confirmedPassword) => {
     try {
-        const user = await findWithId(User, userId);
+        const user = await User.findOne({ email: email });
+        if (!user) {
+            throw createError(400, 'User is not found this Email')
+        }
+
+        // Check if new password and confirmed password match
+        if (newPassword !== confirmedPassword) {
+            throw createError(400, 'New password and confirmed password did not match');
+        }
 
         // compare the password
         const isPasswordMatch = await bcrypt.compare(oldPassword, user.password)
@@ -54,6 +66,7 @@ const updateUserPasswordById = async (userId, oldPassword) => {
         if (!updatedUser) {
             throw createError(404, "User with this ID dons not exist.")
         }
+        return updatedUser;
     } catch (error) {
         throw (error);
     }

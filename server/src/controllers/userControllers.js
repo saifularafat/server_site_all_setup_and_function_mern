@@ -9,7 +9,7 @@ const { deletedImage } = require("../Helper/deletedImage");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonActivationKey, clientUrl } = require("../secret");
 const emailWithNodeMailer = require("../Helper/email");
-const { handelUserAction } = require("../services/usersService");
+const { handelUserAction, updateUserPasswordById } = require("../services/usersService");
 
 // ! all users 
 const getUsers = async (req, res, next) => {
@@ -259,30 +259,13 @@ const handelUpdatePassword = async (req, res, next) => {
         const { email, oldPassword, newPassword, confirmedPassword } = req.body;
         const userId = req.params.id;
 
-        const user = await findWithId(User, userId);
-
-        // compare the password
-        const isPasswordMatch = await bcrypt.compare(oldPassword, user.password)
-        if (!isPasswordMatch) {
-            throw createError(401, 'old password is not correct')
-        }
-
-        // Hash the new password
-        const updatePassword = await bcrypt.hash(newPassword, 10);
-
-        // update options
-        const filter = { _id: userId };
-        const updates = { $set: { password: updatePassword } };
-        const updateOptions = { new: true };
-
-        const updatedUser = await User.findByIdAndUpdate(
-            filter,
-            updates,
-            updateOptions
-        ).select('-password');
-        if (!updatedUser) {
-            throw createError(404, "User with this ID dons not exist.")
-        }
+        const updatedUser = await updateUserPasswordById(
+            userId,
+            email,
+            oldPassword,
+            newPassword,
+            confirmedPassword
+        );
 
         return successResponse(res, {
             statusCode: 200,
