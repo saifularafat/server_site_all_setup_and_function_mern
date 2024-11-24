@@ -1,5 +1,6 @@
 const createError = require("http-errors");
 const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs");
 
 const User = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
@@ -8,6 +9,7 @@ const { deletedImage } = require("../Helper/deletedImage");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonActivationKey, clientUrl } = require("../secret");
 const emailWithNodeMailer = require("../Helper/email");
+const { handelUserAction } = require("../services/usersService");
 
 // ! all users 
 const getUsers = async (req, res, next) => {
@@ -234,32 +236,58 @@ const updateUserByID = async (req, res, next) => {
     }
 }
 
-// ? user Ban by ID
+// ? user Ban and unBan by ID wait Admin
 const handelManageUserBanAndUnBanById = async (req, res, next) => {
     try {
-        const updateId = req.params.id;
+        const userId = req.params.id;
         const action = req.body.action;
 
-        let update;
-
-        if (action === 'ban') {
-            update = { isBanned: true };
-        } else if (action === 'unBan') {
-            update = { isBanned: false };
-        } else {
-            throw createError(400, 'Invalid action, Please select Ban and Unban option.')
-        }
-        const updateOptions = { new: true, runValidators: true, context: 'query' };
-
-        const updatedUser = await User.findByIdAndUpdate(updateId, update, updateOptions)
-            .select('-password');
-        if (!updatedUser) {
-            throw createError(400, `User was not ${action} successfully.`)
-        }
+        await handelUserAction(userId, action)
 
         return successResponse(res, {
             statusCode: 200,
             message: `user was ${action} successfully`,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// ! user update Password by ID
+const handelUpdatePassword = async (req, res, next) => {
+    try {
+        const { email, oldPassword, newPassword, confirmedPassword } = req.body;
+        const userId = req.params.id;
+
+        const user = await findWithId(User, userId);
+
+        // compare the password
+        const isPasswordMatch = await bcrypt.compare(oldPassword, user.password)
+        if (!isPasswordMatch) {
+            throw createError(401, 'old password is not correct')
+        }
+
+        // Hash the new password
+        const updatePassword = await bcrypt.hash(newPassword, 10);
+
+        // update options
+        const filter = { _id: userId };
+        const updates = { $set: { password: updatePassword } };
+        const updateOptions = { new: true };
+
+        const updatedUser = await User.findByIdAndUpdate(
+            filter,
+            updates,
+            updateOptions
+        ).select('-password');
+        if (!updatedUser) {
+            throw createError(404, "User with this ID dons not exist.")
+        }
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Your password is update successfully",
+            payload: { updatedUser }
         })
     } catch (error) {
         next(error)
@@ -275,4 +303,5 @@ module.exports = {
     processRegister,
     activateUsersAccount,
     handelManageUserBanAndUnBanById,
+    handelUpdatePassword,
 };

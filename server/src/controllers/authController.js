@@ -11,6 +11,7 @@ const { access } = require("fs");
 
 const handleLogin = async (req, res, next) => {
     try {
+        console.log("NEXT STEP running");
         const { email, password } = req.body;
         // user email is Exist
         const user = await User.findOne({ email });
@@ -68,7 +69,7 @@ const handleLogin = async (req, res, next) => {
         return successResponse(res, {
             statusCode: 200,
             message: "user logged in successfully",
-            payload: { userWithoutPassword }
+            payload: { users: userWithoutPassword }
         })
     } catch (error) {
         next(error)

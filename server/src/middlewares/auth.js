@@ -4,6 +4,7 @@ const { jsonAccessKey } = require("../secret");
 
 const isLoggedIn = async (req, res, next) => {
     try {
+        console.log("object Okay NOW");
         const accessToken = req.cookies.access_token;
         if (!accessToken) {
             throw createError(401, 'Access token not found.Please Log in..!')
