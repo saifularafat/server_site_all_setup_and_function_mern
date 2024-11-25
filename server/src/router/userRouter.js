@@ -10,9 +10,10 @@ const {
     handelManageUserBanAndUnBanById,
     handelUpdatePassword,
     handelForgetPassword,
+    handelResetPassword,
 } = require("../controllers/userControllers");
 const userImageUpload = require("../middlewares/uploadFile");
-const { validatorUserRegistration, validatorUserUpdatePassword, validatorUserForgetPassword } = require("../validators/auth");
+const { validatorUserRegistration, validatorUserUpdatePassword, validatorUserForgetPassword, validatorUserResetPassword } = require("../validators/auth");
 const runValidation = require("../validators");
 const { isLoggedIn, isLoggedOut, isAdmin } = require("../middlewares/auth");
 
@@ -29,6 +30,14 @@ userRouter.get("/", isLoggedIn, isAdmin, getUsers);
 userRouter.get("/:id", isLoggedIn, getUserById);
 
 userRouter.delete("/:id", isLoggedIn, deleteUserByID);
+
+
+userRouter.put("/reset-password",
+    validatorUserResetPassword,
+    runValidation,
+    isLoggedIn,
+    handelResetPassword
+);
 
 userRouter.put("/:id", userImageUpload.single("image"), updateUserByID);
 userRouter.put("/manage-user/:id",

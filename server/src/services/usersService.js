@@ -1,6 +1,7 @@
 const createError = require("http-errors");
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 
 const User = require("../models/userModel");
@@ -96,11 +97,11 @@ const forgetPasswordByEmail = async (email) => {
         // prepare email
         const emailData = {
             email,
-            subject: "Reset Password Email",
+            subject: "Forget Your Password",
             html: `
     <h2>Hello ${userData.name} !</h2>
-    <p>Please Click Here to <a href="${clientUrl}/api/users/reset-password/${token}"
-        target="_blank"> Reset your password</a>
+    <p>Please Click Here to <a href="${clientUrl}/api/users/forget-password/${token}"
+        target="_blank"> Forget your password</a>
      </p>
     `
         }
@@ -114,8 +115,41 @@ const forgetPasswordByEmail = async (email) => {
     }
 }
 
+// user reset Password By email service handel
+const resetPassword = async (token, newPassword) => {
+    try {
+        // verify jwt token
+        const decoded = jwt.verify(token, jwtResetPasswordKey);
+        if (!decoded) {
+            throw createError(400, 'Invalid or expired token.')
+        }
+
+        // Hash the new password
+        const updatePassword = await bcrypt.hash(newPassword, 10);
+
+        // update options
+        const filter = { email: decoded.email };
+        const updates = { password: updatePassword };
+        const updateOptions = { new: true };
+
+        const updatedUser = await User.findOneAndUpdate(
+            filter,
+            updates,
+            updateOptions
+        ).select('-password');
+
+        if (!updatedUser) {
+            throw createError(400, "Password reset failed.")
+        }
+
+    } catch (error) {
+        throw (error);
+    }
+}
+
 module.exports = {
     handelUserAction,
     updateUserPasswordById,
     forgetPasswordByEmail,
+    resetPassword,
 }

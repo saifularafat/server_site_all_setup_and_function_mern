@@ -9,7 +9,7 @@ const { deletedImage } = require("../Helper/deletedImage");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonActivationKey, clientUrl, jwtResetPasswordKey } = require("../secret");
 const emailWithNodeMailer = require("../Helper/email");
-const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail } = require("../services/usersService");
+const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail, resetPassword } = require("../services/usersService");
 
 // ! all users 
 const getUsers = async (req, res, next) => {
@@ -277,7 +277,7 @@ const handelUpdatePassword = async (req, res, next) => {
     }
 }
 
-// ! user update Password by ID
+// ! user Forget Password by ID
 const handelForgetPassword = async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -287,6 +287,23 @@ const handelForgetPassword = async (req, res, next) => {
             statusCode: 200,
             message: `Please go to your ${email} for resting in the password`,
             payload: token,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+// ! user Reset Password by ID
+const handelResetPassword = async (req, res, next) => {
+    try {
+        const { token, newPassword } = req.body;
+
+        await resetPassword(token, newPassword)
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Password reset successfully",
+            // payload: {}
         })
     } catch (error) {
         next(error)
@@ -304,4 +321,5 @@ module.exports = {
     handelManageUserBanAndUnBanById,
     handelUpdatePassword,
     handelForgetPassword,
+    handelResetPassword,
 };

@@ -11,11 +11,10 @@ const { access } = require("fs");
 
 const handleLogin = async (req, res, next) => {
     try {
-        console.log("NEXT STEP running");
+        // console.log("NEXT STEP running");
         const { email, password } = req.body;
         // user email is Exist
         const user = await User.findOne({ email });
-        // console.log("jdncio uznoivsdjps controller", user);
         if (!user) {
             throw createError(
                 404,

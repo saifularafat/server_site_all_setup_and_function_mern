@@ -56,7 +56,7 @@ const validatorUserLogin = [
         .withMessage("Password is required, Enter your password")
 ]
 
-// Update password
+// Update password validator
 const validatorUserUpdatePassword = [
     body('oldPassword')
         .trim()
@@ -67,11 +67,11 @@ const validatorUserUpdatePassword = [
         .notEmpty()
         .withMessage("Password is required, Enter your new password")
         .isLength({ min: 8 })
-        // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-        // .withMessage(
-        //     "Password should content at least one uppercase letter, one lowercase letter, one number, and one special characters.!"
-        // )
-        ,
+    // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
+    // .withMessage(
+    //     "Password should content at least one uppercase letter, one lowercase letter, one number, and one special characters.!"
+    // )
+    ,
     body('confirmedPassword')
         .custom((value, { req }) => {
             if (value !== req.body.newPassword) {
@@ -82,7 +82,7 @@ const validatorUserUpdatePassword = [
 
 ]
 
-// login validator 
+// Forget Password validator 
 const validatorUserForgetPassword = [
     body('email')
         .trim()
@@ -92,9 +92,28 @@ const validatorUserForgetPassword = [
         .withMessage("Invalid email address!"),
 ]
 
+// Reset Password validator 
+const validatorUserResetPassword = [
+    body('token')
+        .trim()
+        .notEmpty()
+        .withMessage("Your Token is missing"),
+    body('newPassword')
+        .trim()
+        .notEmpty()
+        .withMessage("Password is required, Enter your new password")
+        // .isLength({ min: 8 })
+        // .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
+        // .withMessage(
+        //     "Password should content at least one uppercase letter, one lowercase letter, one number, and one special characters.!"
+        // )
+    ,
+]
+
 module.exports = {
     validatorUserRegistration,
     validatorUserLogin,
     validatorUserUpdatePassword,
     validatorUserForgetPassword,
+    validatorUserResetPassword,
 }
