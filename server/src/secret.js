@@ -9,6 +9,7 @@ const defaultUserImagesPath = process.env.DEFAULT_USER_IMAGE || "public/images/u
 
 const jsonActivationKey = process.env.JSON_ACTIVATION_KEY || "59c81f406a6bc9b7390ab0_V6dh5Ajx86mRIHuNQtOY"
 const jsonAccessKey = process.env.JSON_ACCESS_KEY || "59c81f406a6bc9b7390ab0_Vhb0125pA84963sdx86mRIHuNQtOY"
+const jsonRefreshKey = process.env.JSON_REFRESH_KEY || "59cc9b7390ab0_Vhb0125pA84963sdx86mRIHuNLOad14Ww"
 const jwtResetPasswordKey = process.env.JWT_RESET_PASSWORD_KEY || "59c81f406a6bc9b7390ab0_Vhb0125pA84963sdx86mRIHuNQtOY"
 
 const smtpUserName = process.env.SMTP_USERNAME || "";
@@ -26,5 +27,6 @@ module.exports = {
     smtpPassword,
     clientUrl,
     jsonAccessKey,
+    jsonRefreshKey,
     jwtResetPasswordKey
 }

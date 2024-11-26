@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
-const { jsonAccessKey } = require("../secret");
+const { jsonAccessKey, jsonRefreshKey } = require("../secret");
 const { access } = require("fs");
 
 
@@ -55,11 +55,25 @@ const handleLogin = async (req, res, next) => {
         const accessToken = createJsonWebToken(
             { user: userInfo },
             jsonAccessKey,
-            "3h");
-        // set up local stor token in the HTTP cookie
+            "1m");
+        // set up local cookie stor token in the HTTP cookie
         res.cookie("access_token", accessToken, {
-            maxAge: 180 * 60 * 1000, // 3 house
+            maxAge: 1 * 60 * 1000, // 3 house
             httpOnly: true,
+            // secure: true,
+            sameSite: 'none'
+        })
+
+        // create Refresh jwt token
+        const refreshToken = createJsonWebToken(
+            { user: userInfo },
+            jsonRefreshKey,
+            "7d");
+        // set up local cookie refresh token in the HTTP cookie
+        res.cookie("refresh_token", refreshToken, {
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Days
+            httpOnly: true,
+            // secure: true,
             sameSite: 'none'
         })
 
@@ -80,6 +94,7 @@ const handleLogout = async (req, res, next) => {
     try {
         // success responsive
         res.clearCookie("access_token");
+        res.clearCookie("refresh_token");
         return successResponse(res, {
             statusCode: 200,
             message: "user logout is successfully",
@@ -89,4 +104,47 @@ const handleLogout = async (req, res, next) => {
         next(error)
     }
 }
-module.exports = { handleLogin, handleLogout }
+
+const handleRefreshToken = async (req, res, next) => {
+    try {
+        const oldRefreshToken = req.cookies.refresh_token;
+
+        // old refresh token and jwtRefreshKey check the token 
+        const decodedToken = jwt.verify(oldRefreshToken, jsonRefreshKey);
+        if (!decodedToken) {
+            throw createError(
+                401,
+                'Invalid refresh token. Please login again.'
+            )
+        }
+
+        // again JWT token create 
+        const accessToken = createJsonWebToken(
+            decodedToken.user,
+            jsonAccessKey,
+            "1m");
+        // set up local cookie stor token in the HTTP cookie
+        res.cookie("access_token", accessToken, {
+            maxAge: 1 * 60 * 1000, // 3 house
+            httpOnly: true,
+            // secure: true,
+            sameSite: 'none'
+        })
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "New access token is generated",
+            payload: {}
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+module.exports = {
+    handleLogin,
+    handleLogout,
+    handleRefreshToken,
+
+}

@@ -50,6 +50,9 @@
 29. login input validation and code refactoring
 30. Put/api/user/ban-user -> user Ban
 31. Put/api/user/unBan-user -> user UnBan
-31. Put/api/user/update-password -> Update user Password
-31. Put/api/user/forget-password -> forget this user Password
-31. Put/api/user/reset-password -> Reset this user Password
+32. Put/api/user/update-password -> Update user Password
+33. Put/api/user/forget-password -> forget this user Password
+34. Put/api/user/reset-password -> Reset this user Password
+35. user params id click then mongoose id verify now => /:id([0-9a-fA-F]{24}) <= use only click mongoose id
+36. POST/api/user/refresh-token -> refresh token is work to main token expire then user click to agni main token create
+37. Put/api/user/protected -> verify the access token if verify to identify if a user check now
