@@ -6,8 +6,6 @@ const User = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonAccessKey, jsonRefreshKey } = require("../secret");
-const { access } = require("fs");
-
 
 const handleLogin = async (req, res, next) => {
     try {
@@ -58,7 +56,7 @@ const handleLogin = async (req, res, next) => {
             "1m");
         // set up local cookie stor token in the HTTP cookie
         res.cookie("access_token", accessToken, {
-            maxAge: 1 * 60 * 1000, // 3 house
+            maxAge: 1 * 60 * 60 * 1000, // 1 house
             httpOnly: true,
             // secure: true,
             sameSite: 'none'
@@ -125,7 +123,7 @@ const handleRefreshToken = async (req, res, next) => {
             "1m");
         // set up local cookie stor token in the HTTP cookie
         res.cookie("access_token", accessToken, {
-            maxAge: 1 * 60 * 1000, // 3 house
+            maxAge: 1 * 60 * 60 * 1000, // 1 house
             httpOnly: true,
             // secure: true,
             sameSite: 'none'
@@ -141,10 +139,33 @@ const handleRefreshToken = async (req, res, next) => {
     }
 }
 
+const handelProtectedRoute = async (req, res, next) => {
+    try {
+        const accessToken = req.cookies.access_token;
+
+        // old refresh token and jwtRefreshKey check the token 
+        const decodedToken = jwt.verify(accessToken, jsonAccessKey);
+        if (!decodedToken) {
+            throw createError(
+                401,
+                'Invalid Access token. Please login again.'
+            )
+        }
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "Protected resources access successfully",
+            payload: {}
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 
 module.exports = {
     handleLogin,
     handleLogout,
     handleRefreshToken,
-
+    handelProtectedRoute,
 }

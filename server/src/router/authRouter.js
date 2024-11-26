@@ -6,7 +6,8 @@ const runValidation = require("../validators");
 const {
     handleLogin,
     handleLogout,
-    handleRefreshToken
+    handleRefreshToken,
+    handelProtectedRoute
 } = require("../controllers/authController");
 const { isLoggedOut, isLoggedIn } = require("../middlewares/auth");
 const { validatorUserLogin } = require("../validators/auth");
