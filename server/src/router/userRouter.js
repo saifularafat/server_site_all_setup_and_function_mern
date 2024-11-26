@@ -27,9 +27,9 @@ userRouter.post("/process-register",
 
 userRouter.post("/activate", isLoggedOut, activateUsersAccount);
 userRouter.get("/", isLoggedIn, isAdmin, getUsers);
-userRouter.get("/:id", isLoggedIn, getUserById);
+userRouter.get("/:id([0-9a-fA-F]{24})", isLoggedIn, getUserById);
 
-userRouter.delete("/:id", isLoggedIn, deleteUserByID);
+userRouter.delete("/:id([0-9a-fA-F]{24})", isLoggedIn, deleteUserByID);
 
 
 userRouter.put("/reset-password",
@@ -39,13 +39,13 @@ userRouter.put("/reset-password",
     handelResetPassword
 );
 
-userRouter.put("/:id", userImageUpload.single("image"), updateUserByID);
-userRouter.put("/manage-user/:id",
+userRouter.put("/:id([0-9a-fA-F]{24})", userImageUpload.single("image"), updateUserByID);
+userRouter.put("/manage-user/:id([0-9a-fA-F]{24})",
     isLoggedIn,
     isAdmin,
     handelManageUserBanAndUnBanById
 );
-userRouter.put("/update-password/:id",
+userRouter.put("/update-password/:id([0-9a-fA-F]{24})",
     validatorUserUpdatePassword,
     runValidation,
     isLoggedIn,
