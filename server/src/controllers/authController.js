@@ -53,7 +53,7 @@ const handleLogin = async (req, res, next) => {
         const accessToken = createJsonWebToken(
             { user: userInfo },
             jsonAccessKey,
-            "1m");
+            "1h");
         // set up local cookie stor token in the HTTP cookie
         res.cookie("access_token", accessToken, {
             maxAge: 1 * 60 * 60 * 1000, // 1 house
@@ -75,8 +75,8 @@ const handleLogin = async (req, res, next) => {
             sameSite: 'none'
         })
 
-        const userWithoutPassword = await User.findOne({ email }).select('-password');
-        // success responsive
+        const userWithoutPassword = user.toObject();
+        delete userWithoutPassword.password;
         return successResponse(res, {
             statusCode: 200,
             message: "user logged in successfully",
@@ -120,7 +120,7 @@ const handleRefreshToken = async (req, res, next) => {
         const accessToken = createJsonWebToken(
             decodedToken.user,
             jsonAccessKey,
-            "1m");
+            "1h");
         // set up local cookie stor token in the HTTP cookie
         res.cookie("access_token", accessToken, {
             maxAge: 1 * 60 * 60 * 1000, // 1 house

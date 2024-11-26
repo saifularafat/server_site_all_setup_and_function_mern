@@ -49,7 +49,7 @@ const updateUserPasswordById = async (userId, email, oldPassword, newPassword, c
         // compare the password
         const isPasswordMatch = await bcrypt.compare(oldPassword, user.password)
         if (!isPasswordMatch) {
-            throw createError(401, 'old password is not correct')
+            throw createError(401, 'old password is incorrect')
         }
 
         // Hash the new password

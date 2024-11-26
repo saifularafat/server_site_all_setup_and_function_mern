@@ -1,17 +1,18 @@
 const express = require("express");
 const userRouter = express.Router();
 const {
-    getUsers,
-    deleteUserByID,
-    getUserById,
-    processRegister,
-    activateUsersAccount,
-    updateUserByID,
+    handelActivateUsersAccount,
+    handelProcessRegister,
+    handelGetUsers,
+    handelGetUserById,
+    handelDeleteUserByID,
+    handelUpdateUserByID,
     handelManageUserBanAndUnBanById,
     handelUpdatePassword,
     handelForgetPassword,
     handelResetPassword,
 } = require("../controllers/userControllers");
+
 const userImageUpload = require("../middlewares/uploadFile");
 const { validatorUserRegistration, validatorUserUpdatePassword, validatorUserForgetPassword, validatorUserResetPassword } = require("../validators/auth");
 const runValidation = require("../validators");
@@ -23,13 +24,13 @@ userRouter.post("/process-register",
     isLoggedOut,
     validatorUserRegistration,
     runValidation,
-    processRegister);
+    handelProcessRegister);
 
-userRouter.post("/activate", isLoggedOut, activateUsersAccount);
-userRouter.get("/", isLoggedIn, isAdmin, getUsers);
-userRouter.get("/:id([0-9a-fA-F]{24})", isLoggedIn, getUserById);
+userRouter.post("/activate", isLoggedOut, handelActivateUsersAccount);
+userRouter.get("/", isLoggedIn, isAdmin, handelGetUsers);
+userRouter.get("/:id([0-9a-fA-F]{24})", isLoggedIn, handelGetUserById);
 
-userRouter.delete("/:id([0-9a-fA-F]{24})", isLoggedIn, deleteUserByID);
+userRouter.delete("/:id([0-9a-fA-F]{24})", isLoggedIn, handelDeleteUserByID);
 
 
 userRouter.put("/reset-password",
@@ -39,7 +40,10 @@ userRouter.put("/reset-password",
     handelResetPassword
 );
 
-userRouter.put("/:id([0-9a-fA-F]{24})", userImageUpload.single("image"), updateUserByID);
+userRouter.put("/:id([0-9a-fA-F]{24})",
+    userImageUpload.single("image"),
+    handelUpdateUserByID
+);
 userRouter.put("/manage-user/:id([0-9a-fA-F]{24})",
     isLoggedIn,
     isAdmin,

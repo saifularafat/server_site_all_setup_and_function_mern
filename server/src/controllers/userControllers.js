@@ -12,7 +12,7 @@ const emailWithNodeMailer = require("../Helper/email");
 const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail, resetPassword } = require("../services/usersService");
 
 // ! all users 
-const getUsers = async (req, res, next) => {
+const handelGetUsers = async (req, res, next) => {
     try {
         const search = req.query.search || "";
         const page = Number(req.query.page) || 1;
@@ -36,12 +36,11 @@ const getUsers = async (req, res, next) => {
             .limit(limitPage)
             .skip((page - 1) * limitPage);
 
-        // Total page get in an all users start
+        // Total page get in an all users 
         const count = await User.find(filter).countDocuments();
-        // Total page get in an all users END
 
         // search don't mach this search Value than error throw
-        if (!users) { throw createError(404, "user not found !") };
+        if (!users || users.length === 0) { throw createError(404, "user not found !") };
 
         return successResponse(res, {
             statusCode: 200,
@@ -62,7 +61,7 @@ const getUsers = async (req, res, next) => {
 }
 
 // ! single user information by ID
-const getUserById = async (req, res, next) => {
+const handelGetUserById = async (req, res, next) => {
     try {
         const id = req.params.id;
         const options = { password: 0 };
@@ -78,11 +77,11 @@ const getUserById = async (req, res, next) => {
 }
 
 // ! user delete by ID
-const deleteUserByID = async (req, res, next) => {
+const handelDeleteUserByID = async (req, res, next) => {
     try {
         const id = req.params.id;
         const options = { password: 0 };
-        const user = await findWithId(User, id, options);
+        await findWithId(User, id, options);
 
         await User.findByIdAndDelete({
             _id: id,
@@ -99,7 +98,7 @@ const deleteUserByID = async (req, res, next) => {
 }
 
 // ! user register process by user
-const processRegister = async (req, res, next) => {
+const handelProcessRegister = async (req, res, next) => {
     try {
         const { name, email, password, phone, address } = req.body;
         const image = req.file;
@@ -150,15 +149,14 @@ const processRegister = async (req, res, next) => {
         return successResponse(res, {
             statusCode: 200,
             message: `Please go to your ${email} for competing your registration process`,
-            payload: token,
         })
     } catch (error) {
         next(error)
     }
 }
 
-// ! user active by Account
-const activateUsersAccount = async (req, res, next) => {
+// ! user activate by Account
+const handelActivateUsersAccount = async (req, res, next) => {
     try {
         const token = req.body.token;
 
@@ -174,7 +172,8 @@ const activateUsersAccount = async (req, res, next) => {
                 throw createError(409, "user email already exists. Please Sign in!")
             }
 
-            const userNew = await User.create(decoded);
+            await User.create(decoded);
+
             return successResponse(res, {
                 statusCode: 201,
                 message: "user was registered successfully ",
@@ -195,7 +194,7 @@ const activateUsersAccount = async (req, res, next) => {
 }
 
 // ! user update by ID
-const updateUserByID = async (req, res, next) => {
+const handelUpdateUserByID = async (req, res, next) => {
     try {
         const updateId = req.params.id;
         const options = { password: 0 };
@@ -203,12 +202,13 @@ const updateUserByID = async (req, res, next) => {
         const updateOptions = { new: true, runValidators: true, context: 'query' };
         let updates = {}
         // name, email, password, image, phone, address
-        for (let key in req.body) {
-            if (['name', 'password', 'phone', 'address'].includes(key)) {
+        const allowedFields = ['name', 'password', 'phone', 'address']
+        for (const key in req.body) {
+            if (allowedFields.includes(key)) {
                 updates[key] = req.body[key];
             }
-            else if (['email'].includes(key)) {
-                throw new Error("Email can not be updated.")
+            else if (key === 'email') {
+                throw createError(400, "Email can not be updated.")
             }
         }
         // image update verify
@@ -229,7 +229,7 @@ const updateUserByID = async (req, res, next) => {
         return successResponse(res, {
             statusCode: 200,
             message: "user was update successfully",
-            payload: updates
+            payload: updatedUser,
         })
     } catch (error) {
         next(error)
@@ -312,12 +312,12 @@ const handelResetPassword = async (req, res, next) => {
 
 
 module.exports = {
-    getUsers,
-    getUserById,
-    deleteUserByID,
-    updateUserByID,
-    processRegister,
-    activateUsersAccount,
+    handelGetUsers,
+    handelGetUserById,
+    handelDeleteUserByID,
+    handelUpdateUserByID,
+    handelProcessRegister,
+    handelActivateUsersAccount,
     handelManageUserBanAndUnBanById,
     handelUpdatePassword,
     handelForgetPassword,
