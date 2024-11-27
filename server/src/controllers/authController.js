@@ -6,6 +6,7 @@ const User = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonAccessKey, jsonRefreshKey } = require("../secret");
+const { setAccessTokenCookie, setRefreshTokenCookie } = require("../Helper/cookies");
 
 const handleLogin = async (req, res, next) => {
     try {
@@ -55,12 +56,7 @@ const handleLogin = async (req, res, next) => {
             jsonAccessKey,
             "1h");
         // set up local cookie stor token in the HTTP cookie
-        res.cookie("access_token", accessToken, {
-            maxAge: 1 * 60 * 60 * 1000, // 1 house
-            httpOnly: true,
-            // secure: true,
-            sameSite: 'none'
-        })
+        setAccessTokenCookie(res, accessToken)
 
         // create Refresh jwt token
         const refreshToken = createJsonWebToken(
@@ -68,12 +64,7 @@ const handleLogin = async (req, res, next) => {
             jsonRefreshKey,
             "7d");
         // set up local cookie refresh token in the HTTP cookie
-        res.cookie("refresh_token", refreshToken, {
-            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 Days
-            httpOnly: true,
-            // secure: true,
-            sameSite: 'none'
-        })
+        setRefreshTokenCookie(res, refreshToken)
 
         const userWithoutPassword = user.toObject();
         delete userWithoutPassword.password;
@@ -122,12 +113,7 @@ const handleRefreshToken = async (req, res, next) => {
             jsonAccessKey,
             "1h");
         // set up local cookie stor token in the HTTP cookie
-        res.cookie("access_token", accessToken, {
-            maxAge: 1 * 60 * 60 * 1000, // 1 house
-            httpOnly: true,
-            // secure: true,
-            sameSite: 'none'
-        })
+        setAccessTokenCookie(res, accessToken)
 
         return successResponse(res, {
             statusCode: 200,

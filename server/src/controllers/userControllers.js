@@ -10,6 +10,8 @@ const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonActivationKey, clientUrl, jwtResetPasswordKey } = require("../secret");
 const emailWithNodeMailer = require("../Helper/email");
 const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail, resetPassword } = require("../services/usersService");
+const checkUserExists = require("../Helper/checkUserExists");
+const sendEmail = require("../Helper/sendEmail");
 
 // ! all users 
 const handelGetUsers = async (req, res, next) => {
@@ -113,7 +115,7 @@ const handelProcessRegister = async (req, res, next) => {
 
         const imageBufferString = image.buffer.toString('base64');
 
-        const userExists = await User.exists({ email: email });
+        const userExists = await checkUserExists(email)
 
         if (userExists) {
             throw createError(409, "user email already exists. Please Sign in!")
@@ -138,13 +140,7 @@ const handelProcessRegister = async (req, res, next) => {
         }
 
         // send email with nodemailer
-        try {
-            // * unComment now
-            // await emailWithNodeMailer(emailData)
-        } catch (emailError) {
-            next(createError(500, " Failed to send verification Email"))
-            return;
-        }
+        await sendEmail(emailData);
 
         return successResponse(res, {
             statusCode: 200,
