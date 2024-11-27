@@ -10,5 +10,17 @@ const createCategory = async (name) => {
 
     return newCategory;
 }
+const getCategories = async () => {
+    return await Category
+        .find({})
+        .select('name slug')
+        .lean();
+}
+const getCategory = async (slug) => {
+    return await Category
+        .find({ slug })
+        .select('name slug')
+        .lean();
+}
 
-module.exports = { createCategory }
+module.exports = { createCategory, getCategories, getCategory }
