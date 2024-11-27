@@ -1,4 +1,3 @@
-
 const slugify = require('slugify');
 const Category = require('../models/categoryModel');
 
@@ -23,4 +22,19 @@ const getCategory = async (slug) => {
         .lean();
 }
 
-module.exports = { createCategory, getCategories, getCategory }
+const updateCategory = async (name, slug) => {
+    const filter = { slug };
+    const updates = { $set: { name: name, slug: slugify(name) } };
+    const option = { new: true };
+
+    const updateCategory = await Category
+        .findOneAndUpdate(
+            filter,
+            updates,
+            option,
+        );
+
+    return updateCategory;
+}
+
+module.exports = { createCategory, getCategories, getCategory, updateCategory }

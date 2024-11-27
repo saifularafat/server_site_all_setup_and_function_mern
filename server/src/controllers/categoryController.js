@@ -1,7 +1,8 @@
+const createError = require('http-errors')
 const slugify = require('slugify')
 const { successResponse } = require("../Helper/responseController");
 const Category = require('../models/categoryModel');
-const { createCategory, getCategories, getCategory } = require('../services/categoryService');
+const { createCategory, getCategories, getCategory, updateCategory } = require('../services/categoryService');
 
 const handelCreateCategory = async (req, res, next) => {
     try {
@@ -21,8 +22,12 @@ const handelCreateCategory = async (req, res, next) => {
 const handelGetCategories = async (req, res, next) => {
     try {
         const allCategories = await getCategories();
+
+        if (!allCategories) {
+            throw createError(404, 'Category Not Found')
+        }
         return successResponse(res, {
-            statusCode: 200,
+            statusCode: 201,
             message: `All Category fetched successfully.`,
             payload: allCategories,
         })
@@ -45,8 +50,29 @@ const handelGetCategory = async (req, res, next) => {
     }
 }
 
+const handelUpdateCategory = async (req, res, next) => {
+    try {
+        const { name } = req.body;
+        const { slug } = req.params;
+
+        const updatedCategory = await updateCategory(name, slug)
+
+        if (!updatedCategory) {
+            throw createError(404, 'No Category found with this slug.')
+        }
+        return successResponse(res, {
+            statusCode: 200,
+            message: `Category updated successfully.`,
+            payload: updatedCategory,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = {
     handelCreateCategory,
     handelGetCategories,
     handelGetCategory,
+    handelUpdateCategory,
 }

@@ -7,7 +7,8 @@ const { isLoggedIn, isAdmin } = require("../middlewares/auth");
 const {
     handelCreateCategory,
     handelGetCategories,
-    handelGetCategory
+    handelGetCategory,
+    handelUpdateCategory
 } = require("../controllers/categoryController");
 const { validatorCategory } = require("../validators/category");
 
@@ -25,9 +26,17 @@ categoryRouter.post("/create",
 categoryRouter.get("/",
     handelGetCategories
 );
-//  ~ single Category
+//  ^ single Category
 categoryRouter.get("/:slug",
     handelGetCategory
+);
+//  & update Category
+categoryRouter.put("/:slug",
+    validatorCategory,
+    runValidation,
+    isLoggedIn,
+    isAdmin,
+    handelUpdateCategory
 );
 
 module.exports = categoryRouter; 
