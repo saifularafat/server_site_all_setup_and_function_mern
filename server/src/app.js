@@ -10,6 +10,7 @@ const userRouter = require("./router/userRouter");
 const authRouter = require("./router/authRouter");
 const seedRouter = require("./router/seedRouter");
 const { errorResponse } = require("./Helper/responseController");
+const categoryRouter = require("./router/categoryRouter");
 
 const app = express();
 
@@ -52,6 +53,7 @@ app.use((req, res, next) => {
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/seed", seedRouter);
+app.use("/api/categories", categoryRouter);
 
 // Middleware for authentication
 const isLoggedIn = (req, res, next) => {

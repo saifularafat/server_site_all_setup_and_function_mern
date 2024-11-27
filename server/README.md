@@ -57,4 +57,8 @@
 36. POST/api/user/refresh-token -> refresh token is work to main token expire then user click to agni main token create
 37. Put/api/user/protected -> verify the access token if verify to identify if a user check now
 38. module code structure
-39. winston logger library
+39. category model and input validation
+40. category CRUD - create category
+41. category CRUD - Read category
+42. category CRUD - Update category
+43. category CRUD - Delate category
