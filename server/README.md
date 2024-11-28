@@ -57,8 +57,26 @@
 36. POST/api/user/refresh-token -> refresh token is work to main token expire then user click to agni main token create
 37. Put/api/user/protected -> verify the access token if verify to identify if a user check now
 38. module code structure
+
 39. category model and input validation
-40. category CRUD - create category
-41. category CRUD - Read category
-42. category CRUD - Update category
-43. category CRUD - Delate category
+40. category API - create category
+    create category => post/api/categories/create
+41. category API - Read category
+    get all category => get/api/categories
+    get single category => get/api/categories/:slug
+42. category API - Update category with slug names
+    put/api/categories/:slug
+43. category API - Delate category with slug names
+    delete/api/categories/:slug
+
+44. Product API - Product Model
+45. Product API - create seed router for testing Products
+46. Product API - Create Product
+    post/api/product/create
+47. Product API - Read Product
+    get all products get/api/product
+    get Single products get/api/product/:id
+48. Product API - Update Product
+    update Single products put/api/product/:id
+49. Product API - Delete Product
+    delete Single products delete/api/product/:id

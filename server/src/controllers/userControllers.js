@@ -1,14 +1,11 @@
 const createError = require("http-errors");
 const jwt = require("jsonwebtoken")
-const bcrypt = require("bcryptjs");
 
 const User = require("../models/userModel");
 const { successResponse } = require("../Helper/responseController");
 const { findWithId } = require("../services/findItems");
-const { deletedImage } = require("../Helper/deletedImage");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
-const { jsonActivationKey, clientUrl, jwtResetPasswordKey } = require("../secret");
-const emailWithNodeMailer = require("../Helper/email");
+const { jsonActivationKey, clientUrl } = require("../secret");
 const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail, resetPassword } = require("../services/usersService");
 const checkUserExists = require("../Helper/checkUserExists");
 const sendEmail = require("../Helper/sendEmail");

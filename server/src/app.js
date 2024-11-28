@@ -11,13 +11,14 @@ const authRouter = require("./router/authRouter");
 const seedRouter = require("./router/seedRouter");
 const { errorResponse } = require("./Helper/responseController");
 const categoryRouter = require("./router/categoryRouter");
+const productRouter = require("./router/productRouter");
 
 const app = express();
 
 // API request rate limiter
 const rateLimitApi = rateLimit({
     windowMs: 1 * 60 * 1000, // 1 minute
-    max: 10, // Max 10 requests per IP
+    max: 20, // Max 10 requests per IP
     message: "Too many requests from this IP. Please try again later.",
 });
 
@@ -54,6 +55,7 @@ app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/seed", seedRouter);
 app.use("/api/categories", categoryRouter);
+app.use("/api/products", productRouter);
 
 // Middleware for authentication
 const isLoggedIn = (req, res, next) => {
