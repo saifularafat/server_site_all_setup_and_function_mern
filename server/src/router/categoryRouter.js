@@ -8,7 +8,8 @@ const {
     handelCreateCategory,
     handelGetCategories,
     handelGetCategory,
-    handelUpdateCategory
+    handelUpdateCategory,
+    handelDeleteCategory,
 } = require("../controllers/categoryController");
 const { validatorCategory } = require("../validators/category");
 
@@ -38,5 +39,11 @@ categoryRouter.put("/:slug",
     isAdmin,
     handelUpdateCategory
 );
+//  * update Category
+categoryRouter.delete("/:slug",
+    isLoggedIn,
+    isAdmin,
+    handelDeleteCategory
+);
 
-module.exports = categoryRouter; 
+module.exports = categoryRouter;
