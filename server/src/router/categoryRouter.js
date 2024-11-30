@@ -39,7 +39,7 @@ categoryRouter.put("/:slug",
     isAdmin,
     handelUpdateCategory
 );
-//  * update Category
+//  * Delete Category
 categoryRouter.delete("/:slug",
     isLoggedIn,
     isAdmin,

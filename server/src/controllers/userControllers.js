@@ -86,7 +86,7 @@ const handelDeleteUserByID = async (req, res, next) => {
             _id: id,
             isAdmin: false
         })
-
+        
         return successResponse(res, {
             statusCode: 200,
             message: "user was deleted successfully",

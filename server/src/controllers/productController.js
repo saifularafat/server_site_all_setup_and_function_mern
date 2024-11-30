@@ -4,7 +4,7 @@ const slugify = require("slugify")
 const { successResponse } = require("../Helper/responseController");
 const { findWithId } = require("../services/findItems");
 const Product = require("../models/productsModel");
-const { createProduct, getProducts, getSingleProduct } = require("../services/productService");
+const { createProduct, getProducts, getSingleProduct, deleteProductBySlug, updateProductBySlug } = require("../services/productService");
 
 
 const handelCreateProduct = async (req, res, next) => {
@@ -44,32 +44,98 @@ const handelCreateProduct = async (req, res, next) => {
 
 const handelGetProducts = async (req, res, next) => {
     try {
-        const allProducts = await getProducts();
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 5;
+        // const allProducts = await Product.find({})
+        //     .populate('category')
+        //     .skip((page - 1) * limit)
+        //     .limit(limit)
+        //     .sort({ createdAt: -1 });
 
-        if (!allProducts) {
-            throw createError(404, 'Product Not Found')
-        }
+        // if (!allProducts) {
+        //     throw createError(404, 'Product Not Found')
+        // }
+        // const count = await Product.find({}).countDocuments();
+
+        const productData = await getProducts(page, limit)
+
         return successResponse(res, {
             statusCode: 201,
-            message: `All Product fetched successfully.`,
-            payload: allProducts,
+            message: `Return all the product successfully.`,
+            payload: {
+                products: productData.products,
+                pagination: {
+                    totalPage: productData.totalPage,
+                    currentPage: productData.currentPage,
+                    previousPage: page - 1,
+                    nextPage: page + 1,
+                    totalNumberOfProduct: productData.count
+                }
+            },
         })
     } catch (error) {
         next(error)
     }
 }
+
 const handelGetSingleProduct = async (req, res, next) => {
     try {
         const { slug } = req.params;
-        const allCategories = await getSingleProduct(slug);
+        const product = await getSingleProduct(slug);
         return successResponse(res, {
             statusCode: 200,
-            message: `All Category fetched successfully.`,
-            payload: allCategories,
+            message: `Return a product is successfully.`,
+            payload: product,
         })
     } catch (error) {
         next(error)
     }
 }
 
-module.exports = { handelCreateProduct, handelGetProducts, handelGetSingleProduct }
+const handelUpdateProduct = async (req, res, next) => {
+    try {
+        const { slug } = req.params;
+        const updateOptions = { new: true, runValidators: true, context: 'query' };
+        let updates = {}
+        // name, description, price, image, quantity, category, sold, shipping
+        const allowedFields = [
+            'name',
+            'description',
+            'price',
+            'quantity',
+            'sold',
+            'shipping',
+            'category',
+        ]
+        for (const key in req.body) {
+            if (allowedFields.includes(key)) {
+                updates[key] = req.body[key];
+            }
+        }
+        // image update verify
+        const image = req.file;
+        const updateProduct = await updateProductBySlug(
+            slug,
+            image,
+            updates,
+            updateOptions,
+        )
+
+        return successResponse(res, {
+            statusCode: 200,
+            message: "product was update successfully",
+            payload: updateProduct,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
+
+module.exports = {
+    handelCreateProduct,
+    handelGetProducts,
+    handelGetSingleProduct,
+    handelUpdateProduct,
+    handelDeleteProduct
+}

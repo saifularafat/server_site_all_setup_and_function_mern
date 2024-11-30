@@ -40,6 +40,42 @@ const validatorProduct = [
         })
         .withMessage("Product image is required"),
 ]
+
+// update Product Validator
+const validatorUpdateProduct = [
+    body('name')
+        .trim()
+        .notEmpty()
+        .isLength({ min: 3 })
+        .withMessage("Product Name should be at least 3 characters long!"),
+    body('description')
+        .trim()
+        .notEmpty()
+        .isLength({ min: 3 })
+        .withMessage("Product description should be at least 3 characters long!"),
+    body('price')
+        .trim()
+        .notEmpty()
+        .isFloat({ min: 0 })
+        .withMessage("Price must be a positive number"),
+    body('quantity')
+        .trim()
+        .notEmpty()
+        .isInt({ min: 0 })
+        .withMessage("Quantity must be a positive integer"),
+    body('category')
+        .trim()
+        .notEmpty(),
+    body('image')
+        .custom((value, { req }) => {
+            if (!req.file || !req.file.buffer) {
+                throw new Error("Product image is required!")
+            }
+            return true;
+        })
+]
+
 module.exports = {
     validatorProduct,
+    validatorUpdateProduct,
 }
