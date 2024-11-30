@@ -4,7 +4,7 @@ const slugify = require("slugify")
 const { successResponse } = require("../Helper/responseController");
 const { findWithId } = require("../services/findItems");
 const Product = require("../models/productsModel");
-const { createProduct, getProducts } = require("../services/productService");
+const { createProduct, getProducts, getSingleProduct } = require("../services/productService");
 
 
 const handelCreateProduct = async (req, res, next) => {
@@ -58,5 +58,18 @@ const handelGetProducts = async (req, res, next) => {
         next(error)
     }
 }
+const handelGetSingleProduct = async (req, res, next) => {
+    try {
+        const { slug } = req.params;
+        const allCategories = await getSingleProduct(slug);
+        return successResponse(res, {
+            statusCode: 200,
+            message: `All Category fetched successfully.`,
+            payload: allCategories,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
-module.exports = { handelCreateProduct, handelGetProducts }
+module.exports = { handelCreateProduct, handelGetProducts, handelGetSingleProduct }

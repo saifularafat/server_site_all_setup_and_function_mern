@@ -5,9 +5,13 @@ const { productImageUpload } = require("../middlewares/uploadFile")
 
 const { validatorProduct } = require("../validators/product");
 const runValidation = require("../validators");
-const { isLoggedIn, isLoggedOut, isAdmin } = require("../middlewares/auth");
+const { isLoggedIn, isAdmin } = require("../middlewares/auth");
 
-const { handelCreateProduct, handelGetProducts } = require("../controllers/productController");
+const {
+    handelCreateProduct,
+    handelGetProducts,
+    handelGetSingleProduct,
+} = require("../controllers/productController");
 
 // !Get, Post, Put, Delete all user router
 productRouter.post("/product-create",
@@ -25,7 +29,7 @@ productRouter.get("/",
 );
 //  ^ single product
 productRouter.get("/:slug",
-    // handelGetProduct
+    handelGetSingleProduct
 );
 
 module.exports = productRouter; 

@@ -38,7 +38,15 @@ const getProducts = async () => {
         .select('name slug')
         .lean();
 }
+
+const getSingleProduct = async (slug) => {
+    return await Product
+        .find({ slug })
+        .select('name slug')
+        .lean();
+}
 module.exports = {
     createProduct,
-    getProducts
+    getProducts,
+    getSingleProduct
 }
