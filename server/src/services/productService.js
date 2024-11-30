@@ -33,8 +33,8 @@ const createProduct = async (productData) => {
     return newProduct;
 }
 
-const getProducts = async (page = 1, limit = 5) => {
-    const products = await Product.find({})
+const getProducts = async (page = 1, limit = 5, filter = {}) => {
+    const products = await Product.find(filter)
         .populate('category')
         .skip((page - 1) * limit)
         .limit(limit)
@@ -43,7 +43,7 @@ const getProducts = async (page = 1, limit = 5) => {
     if (!products) {
         throw createError(404, 'Product Not Found')
     }
-    const count = await Product.find({}).countDocuments();
+    const count = await Product.find(filter).countDocuments();
 
     return {
         products,
@@ -65,24 +65,23 @@ const getSingleProduct = async (slug) => {
 }
 
 const updateProductBySlug = async (slug, image, updates, updateOptions) => {
-    if (updates.name) {
-        updates.slug = slugify(updates.name)
-    }
-    if (image) {
-        if (image.size > 1024 * 1024 * 2) {
-            throw createError(400, "Image file is too large. It must be less than 2 MB.")
+    try {
+        if (image) {
+            if (image.size > 1024 * 1024 * 2) {
+                throw createError(400, "Image file is too large. It must be less than 2 MB.")
+            }
+            updates.image = image.buffer.toString('base64')
         }
-        updates.image = image.buffer.toString('base64')
-    }
-    const updatedProduct = await Product.findOneAndUpdate(
-        { slug },
-        updates,
-        updateOptions,
-    )
-    if (!updatedProduct) {
-        throw createError(404, "Product with this Name dons not exist.")
-    }
-    return updatedProduct;
+        const updatedProduct = await Product.findOneAndUpdate(
+            { slug },
+            updates,
+            updateOptions,
+        )
+        if (!updatedProduct) {
+            throw createError(404, "Updating Product was not possible.")
+        }
+        return updatedProduct;
+    } catch (error) { }
 }
 
 const deleteProductBySlug = async (slug) => {

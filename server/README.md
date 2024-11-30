@@ -80,3 +80,5 @@
     update Single products put/api/product/:id
 49. Product API - Delete Product
     delete Single products delete/api/product/:id
+49. Product API - Search and Filter Product
+    delete Single products delete/api/products

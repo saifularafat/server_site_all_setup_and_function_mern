@@ -44,20 +44,20 @@ const handelCreateProduct = async (req, res, next) => {
 
 const handelGetProducts = async (req, res, next) => {
     try {
+        const search = req.query.search || "";
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 5;
-        // const allProducts = await Product.find({})
-        //     .populate('category')
-        //     .skip((page - 1) * limit)
-        //     .limit(limit)
-        //     .sort({ createdAt: -1 });
 
-        // if (!allProducts) {
-        //     throw createError(404, 'Product Not Found')
-        // }
-        // const count = await Product.find({}).countDocuments();
+        const searchRegExp = new RegExp(".*" + search + ".*", "i");
 
-        const productData = await getProducts(page, limit)
+        const filter = {
+            $or: [
+                { name: { $regex: searchRegExp } },
+                // { price: { $regex: searchRegExp } },
+            ]
+        }
+
+        const productData = await getProducts(page, limit, filter)
 
         return successResponse(res, {
             statusCode: 201,
@@ -109,6 +109,9 @@ const handelUpdateProduct = async (req, res, next) => {
         ]
         for (const key in req.body) {
             if (allowedFields.includes(key)) {
+                if (key === 'name') {
+                    updates.slug = slugify(req.body[key]);
+                }
                 updates[key] = req.body[key];
             }
         }
