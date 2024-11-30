@@ -7,7 +7,7 @@ const { validatorProduct } = require("../validators/product");
 const runValidation = require("../validators");
 const { isLoggedIn, isLoggedOut, isAdmin } = require("../middlewares/auth");
 
-const { handelCreateProduct } = require("../controllers/productController");
+const { handelCreateProduct, handelGetProducts } = require("../controllers/productController");
 
 // !Get, Post, Put, Delete all user router
 productRouter.post("/product-create",
@@ -17,6 +17,15 @@ productRouter.post("/product-create",
     isLoggedIn,
     isAdmin,
     handelCreateProduct
+);
+
+//  ~ GET product
+productRouter.get("/",
+    handelGetProducts
+);
+//  ^ single product
+productRouter.get("/:slug",
+    // handelGetProduct
 );
 
 module.exports = productRouter; 

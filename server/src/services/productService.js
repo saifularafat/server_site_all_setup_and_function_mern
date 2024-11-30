@@ -31,6 +31,14 @@ const createProduct = async (productData) => {
 
     return newProduct;
 }
+
+const getProducts = async () => {
+    return await Product
+        .find({})
+        .select('name slug')
+        .lean();
+}
 module.exports = {
     createProduct,
+    getProducts
 }

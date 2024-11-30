@@ -72,7 +72,7 @@
 44. Product API - Product Model
 45. Product API - create seed router for testing Products
 46. Product API - Create Product
-    post/api/product/create
+    post/api/product-create
 47. Product API - Read Product
     get all products get/api/product
     get Single products get/api/product/:id
