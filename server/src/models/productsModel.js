@@ -51,11 +51,10 @@ const productSchema = new Schema({
     },
     sold: {
         type: Number,
-        required: [true, "Sold Quantity is required"],
         trim: true,
         default: 0,
         validate: {
-            validator: (v) => v > 0,
+            validator: (v) => v >= 0,
             message: (props) =>
                 `${props.value} is not a Sold Quantity! Sold Quantity must be greater than 0`,
         },
