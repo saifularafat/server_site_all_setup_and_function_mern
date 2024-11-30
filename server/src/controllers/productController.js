@@ -131,6 +131,18 @@ const handelUpdateProduct = async (req, res, next) => {
     }
 }
 
+const handelDeleteProduct = async (req, res, next) => {
+    try {
+        const { slug } = req.params;
+        await deleteProductBySlug(slug)
+        return successResponse(res, {
+            statusCode: 200,
+            message: `Product was deleted successfully.`,
+        })
+    } catch (error) {
+        next(error)
+    }
+}
 
 module.exports = {
     handelCreateProduct,
