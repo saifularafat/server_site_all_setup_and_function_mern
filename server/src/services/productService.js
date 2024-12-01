@@ -85,14 +85,17 @@ const updateProductBySlug = async (slug, image, updates, updateOptions) => {
 }
 
 const deleteProductBySlug = async (slug) => {
-    const product = await Product.findOneAndDelete({ slug });
-    if (!product) {
-        throw createError(404, 'No product found.')
+    try {
+        const product = await Product.findOneAndDelete({ slug });
+        if (!product) {
+            throw createError(404, 'No product found.')
+        }
+        if (product && product.image) {
+            await deletedImage(product.image)
+        }
+    } catch (error) {
+        throw error;
     }
-    if (product && product.image) {
-        await deletedImage(product.image)
-    }
-    return product;
 }
 
 module.exports = {

@@ -6,7 +6,7 @@ const { successResponse } = require("../Helper/responseController");
 const { findWithId } = require("../services/findItems");
 const { createJsonWebToken } = require("../Helper/jsonwebtoken");
 const { jsonActivationKey, clientUrl } = require("../secret");
-const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail, resetPassword } = require("../services/usersService");
+const { handelUserAction, updateUserPasswordById, forgetPasswordByEmail, resetPassword, findUsers, findUserById, deleteUserById, updateUserById } = require("../services/usersService");
 const checkUserExists = require("../Helper/checkUserExists");
 const sendEmail = require("../Helper/sendEmail");
 
@@ -15,44 +15,17 @@ const handelGetUsers = async (req, res, next) => {
     try {
         const search = req.query.search || "";
         const page = Number(req.query.page) || 1;
-        const limitPage = Number(req.query.limit) || 5;
+        const limit = Number(req.query.limit) || 5;
 
-        const searchRegExp = new RegExp(".*" + search + ".*", "i");
-
-        const filter = {
-            isAdmin: { $ne: true },
-            isInstructor: { $ne: true },
-            $or: [
-                { name: { $regex: searchRegExp } },
-                { email: { $regex: searchRegExp } },
-                { phone: { $regex: searchRegExp } },
-            ]
-        }
-        // don't show all users password
-        const options = { password: 0 }
-        const users = await User
-            .find(filter, options)
-            .limit(limitPage)
-            .skip((page - 1) * limitPage);
-
-        // Total page get in an all users 
-        const count = await User.find(filter).countDocuments();
-
-        // search don't mach this search Value than error throw
-        if (!users || users.length === 0) { throw createError(404, "user not found !") };
+        const { users, pagination } = await findUsers(search, limit, page);
 
         return successResponse(res, {
             statusCode: 200,
             message: "users were returned successfully",
             payload: {
-                users,
-                pagination: {
-                    totalPage: Math.ceil(count / limitPage),
-                    currentPage: page,
-                    previousPage: page - 1 > 0 ? page - 1 : null,
-                    nextPage: page + 1 <= Math.ceil(count / limitPage) ? page + 1 : null,
-                }
-            }
+                users: users,
+                pagination: pagination,
+            },
         })
     } catch (error) {
         next(error)
@@ -64,7 +37,8 @@ const handelGetUserById = async (req, res, next) => {
     try {
         const id = req.params.id;
         const options = { password: 0 };
-        const user = await findWithId(User, id, options);
+        const user = await findUserById(id, options);
+
         return successResponse(res, {
             statusCode: 200,
             message: "user were returned successfully",
@@ -80,13 +54,8 @@ const handelDeleteUserByID = async (req, res, next) => {
     try {
         const id = req.params.id;
         const options = { password: 0 };
-        await findWithId(User, id, options);
+        await deleteUserById(id, options);
 
-        await User.findByIdAndDelete({
-            _id: id,
-            isAdmin: false
-        })
-        
         return successResponse(res, {
             statusCode: 200,
             message: "user was deleted successfully",
@@ -137,11 +106,12 @@ const handelProcessRegister = async (req, res, next) => {
         }
 
         // send email with nodemailer
-        await sendEmail(emailData);
+        // await sendEmail(emailData);
 
         return successResponse(res, {
             statusCode: 200,
             message: `Please go to your ${email} for competing your registration process`,
+            payload: token
         })
     } catch (error) {
         next(error)
@@ -186,38 +156,12 @@ const handelActivateUsersAccount = async (req, res, next) => {
     }
 }
 
-// ! user update by ID
+// ! update user by ID
 const handelUpdateUserByID = async (req, res, next) => {
     try {
-        const updateId = req.params.id;
-        const options = { password: 0 };
-        await findWithId(User, updateId, options);
-        const updateOptions = { new: true, runValidators: true, context: 'query' };
-        let updates = {}
-        // name, email, password, image, phone, address
-        const allowedFields = ['name', 'password', 'phone', 'address']
-        for (const key in req.body) {
-            if (allowedFields.includes(key)) {
-                updates[key] = req.body[key];
-            }
-            else if (key === 'email') {
-                throw createError(400, "Email can not be updated.")
-            }
-        }
-        // image update verify
-        const image = req.file;
-        if (image) {
-            if (image.size > 1024 * 1024 * 2) {
-                throw createError(400, "Image file is too large. It must be less than 2 MB.")
-            }
-            updates.image = image.buffer.toString('base64')
-        }
+        const userId = req.params.id;
 
-        const updatedUser = await User.findByIdAndUpdate(updateId, updates, updateOptions)
-            .select('-password');
-        if (!updatedUser) {
-            throw createError(404, "User with this ID dons not exist.")
-        }
+        const updatedUser = await updateUserById(userId, req)
 
         return successResponse(res, {
             statusCode: 200,
